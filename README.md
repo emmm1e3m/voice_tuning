@@ -20,4 +20,11 @@
 
 [使用说明](docs/使用说明.md) · [启动说明](scripts/启动说明.md)
 
-基于 [Voice Builder](https://voice.starbow.top/) 与 [MTF 声音女性化练习手册](https://mtf-voice-training.vercel.app/) 整合。
+## 来源与致谢
+
+声音练习室基于以下文档与代码进行二次开发和易用性优化，整合训练教程与声音分析功能，并优化界面布局和操作流程。
+
+- 文档来源：[あおぎ葵](https://space.bilibili.com/942770) · [MTF 声音女性化练习手册](https://mtf-voice-training.vercel.app/)。
+- 代码来源：[JPs-git/voice-builder](https://github.com/JPs-git/voice-builder) · [原项目在线体验](https://voice.starbow.top/)。
+
+感谢原作者提供的文档与代码。
