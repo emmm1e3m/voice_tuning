@@ -1,23 +1,11 @@
-# AGENTS.md
+# 声音练习室源码工作说明
 
-## 分支命名规范
+本源码已整合到用户的 voice_tuning 独立仓库。仓库根目录是 ../../..，请先阅读根 AGENTS.md。
 
-格式：`<type>/<kebab-case>`
-
-- `type` 仅限：`feat`、`fix`、`refactor`、`docs`、`ci`、`chore`
-- 全小写 kebab-case，无大写、无下划线、无 `type/type-` 类重复前缀
-- 示例：`feat/practice-page`、`fix/piano-active-note-label`
-
-## Worktree 管理规范
-
-- 目录一律 `.worktrees/<分支名原样保留斜杠>`，例：分支 `fix/piano-label` → `.worktrees/fix/piano-label`
-- `.worktrees/` 已在 `.gitignore` 中忽略，禁止追踪其内容
-- 主 checkout 常驻 `master` 并保持干净；功能开发一律在 worktree + 对应分支内进行
-- 一个分支对应一个 worktree；合并后执行 `git worktree remove` + `git branch -d` 清理
-
-## PR 规范
-
-- base 一律 `master`；一分支一 PR；标题 Conventional Commits 且 type 与分支一致，如分支 `fix/piano-label` → `fix(piano): xxx`
-- 合并方式一律 Squash（历史 `#30-#39` 一致；`release.yml` 靠 master 的 squash 标题判断 feat→minor / fix→patch）
-- 合并前必须 `npm test` + `npm run build` + `npx tsc --noEmit` 全过；`[skip ci]` 仅允许自动版本提交使用
-- 合并后删除分支并 `git worktree remove` 清理 worktree（仓库已开 deleteBranchOnMerge）
+- origin 必须为 https://github.com/emmm1e3m/voice_tuning.git，主分支 main。
+- GitHub 凭据由根仓库配置的 Windows Git Credential Manager 提供，禁止把令牌写入源码。
+- 原上游保留为 upstream，只读且禁止推送；原 master 自动版本发布流程已停用。
+- 用户要求不新建其它目录，不沿用原项目强制创建 worktree 的约定。
+- Pages 使用 HashRouter，生产构建必须 npm run build -- --base=/voice_tuning/。
+- 修改应用后验证 npm test、npx tsc --noEmit 和生产构建；根 .github/workflows/pages.yml 自动部署。
+- 使用 UTF-8 和中文代码注释。
