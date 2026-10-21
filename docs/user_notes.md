@@ -39,3 +39,5 @@
 - 主页和 Emoji 壁纸已拆到同级独立文件夹。主页仅展示旅行饼狗与 Emoji 壁纸。声音训练单独部署，不展示入口。
 - 源码仍位于 downloads/voice.starbow.top/source；原有 .git 和 .github 元数据迁移到根，upstream 禁止推送。HashRouter 加 /voice_tuning/ base 支持 Pages；原上游 release workflow 停用。
 - 各目录 AGENTS.md 记录 origin、Pages 发布方式和系统凭据管理器使用。设计参考图、原始 ZIP、下载外层快照保留本机，不提交。
+
+- 已验证声音分析、音高参考深链接和 HTTPS 环境；完整 700 项测试、本地生产构建及首轮云端部署通过。云端重复构建出现一次导出测试超时，部署检查已放宽到 15 秒，未改应用功能。

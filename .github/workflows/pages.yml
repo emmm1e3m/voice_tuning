@@ -28,7 +28,8 @@ jobs:
           cache: npm
           cache-dependency-path: downloads/voice.starbow.top/source/package-lock.json
       - run: npm ci
-      - run: npm test
+      # 云端共享运行器偶有调度延迟，保留全部断言并给音频缓冲导出测试足够时间。
+      - run: npm test -- --testTimeout=15000
       - run: npx tsc --noEmit
       # 固定项目路径，确保手册图片和入口保留仓库前缀。
       - run: npm run build -- --base=/voice_tuning/
