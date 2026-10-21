@@ -34,3 +34,5 @@ README、source/README、source/docs/integration-notes、coordinate-system 已�
 - 源码仍位于 downloads/voice.starbow.top/source；原有 .git 和 .github 元数据迁移到根，upstream 禁止推送。HashRouter 加 /voice_tuning/ base 支持 Pages；原上游 release workflow 停用。
 - 已确认：首次云端构建和 Pages 部署成功；公网声音分析及 #/practice 可访问，手册链接保留 /voice_tuning/ 前缀。
 - 云端重复构建时 wavExport 单测曾在 5 秒默认限时超时（699/700 通过）；Pages workflow 为完整测试统一设置 15 秒限时，保留原断言。
+
+- 最终确认：15 秒限时配置后的云端完整测试、构建和 Pages 部署均成功（run 39620087662）；四个工作目录的 git push --dry-run 均通过。
