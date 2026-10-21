@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, act } from '@testing-library/react'
 import { FormantChart } from '../components/FormantChart'
 import { useAppStore } from '../store/appStore'
+import { useChartDisplayStore } from '../store/chartDisplayStore'
 
 const { setOptionMock, getInstanceMock } = vi.hoisted(() => ({
   setOptionMock: vi.fn(),
@@ -34,6 +35,7 @@ describe('FormantChart', () => {
   beforeEach(() => {
     useAppStore.getState().reset()
     setOptionMock.mockClear()
+    useChartDisplayStore.getState().setShowRegister(true)
   })
 
   it('renders data for all series by default', () => {
@@ -64,5 +66,16 @@ describe('FormantChart', () => {
 
     expect(seriesByName('F0').data).toEqual([])
     expect(seriesByName('F0').markLine).toBeUndefined()
+  })
+  it('colors register time segments independently of visible frequencies and can hide them', () => {
+    useAppStore.getState().setFrames([{ time: .1, f0: 220, f1: 900, f2: 1250, register: 'mixed' }])
+    for (const key of ['f0', 'f1', 'f2'] as const) useAppStore.getState().toggleFormantVisible(key)
+    render(<FormantChart />)
+    const area = seriesByName('__register').markArea.data[0]
+    expect(area[0].name).toBe('混声')
+    expect(area[0].xAxis).toBeCloseTo(.095)
+    expect(area[1].xAxis).toBeCloseTo(.105)
+    act(() => useChartDisplayStore.getState().setShowRegister(false))
+    expect(seriesByName('__register').markArea.data).toEqual([])
   })
 })

@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import type { AppConfig, TargetBands, AnalysisFrame, AnalysisStats, FormantSeries, FormantVisibility, PresetOverride } from '../types'
 import { DEFAULT_CONFIG, VOWEL_PRESETS } from '../types'
-import { getBandCenter, normalizeTargetBands, updateTargetCenter, type TargetBandKey } from '../config/targetBandRules'
+import { getBandCenter, normalizeTargetBands, recommendVowelTargets, updateTargetCenter, type TargetBandKey } from '../config/targetBandRules'
 import { AUDIO_SAMPLE_RATE } from '../config/audioLimits'
 import { normalizeAppConfig, retainedFrameCapacity } from '../config/appConfig'
 import { recordingBuffer } from '../audio/recordingBuffer'
@@ -13,6 +13,7 @@ interface AppState {
   bands: TargetBands
   activePreset: string
   presetOverrides: PresetOverride[]
+  targetMode: 'vowel' | 'manual'
   frames: AnalysisFrame[]
   latestFrame: AnalysisFrame | null
   stats: AnalysisStats
@@ -23,6 +24,7 @@ interface AppActions {
   setConfig: (config: Partial<AppConfig>) => void
   setBands: (bands: Partial<Record<'f0' | 'f1' | 'f2', [number, number]>>) => void
   setBandCenter: (key: TargetBandKey, center: number) => void
+  setTargetMode: (mode: 'vowel' | 'manual') => void
   setActivePreset: (name: string) => void
   switchPreset: (name: string) => void
   savePresetOverride: (key: string, f0: [number, number], f1: [number, number], f2: [number, number]) => void
@@ -102,6 +104,7 @@ const initialState: AppState = {
   bands: resolveBands('vowel-a', storedOverrides),
   activePreset: 'vowel-a',
   presetOverrides: storedOverrides,
+  targetMode: storedOverrides.length ? 'manual' : 'vowel',
   frames: [],
   latestFrame: null,
   stats: { f0Mean: null, hitRate: null, duration: 0 },
@@ -130,12 +133,23 @@ export const useAppStore = create<AppStore>()(
         return { bands: next }
       }),
 
-      setBandCenter: (key, center) => set(state => ({ bands: updateTargetCenter(state.bands, key, center) })),
+      setBandCenter: (key, center) => set(state => {
+        if (!Number.isFinite(center)) return {}
+        const bands = updateTargetCenter(state.bands, key, center)
+        return {
+          bands: key === 'f0' && state.targetMode === 'vowel' ? recommendVowelTargets(bands, state.activePreset) : bands,
+          targetMode: key === 'f0' ? state.targetMode : 'manual',
+        }
+      }),
+
+      setTargetMode: (targetMode) => set(state => ({ targetMode, bands: targetMode === 'vowel' ? recommendVowelTargets(state.bands, state.activePreset) : state.bands })),
 
       setActivePreset: (name) => set({ activePreset: name }),
 
       switchPreset: (name) => set((state) => Object.prototype.hasOwnProperty.call(VOWEL_PRESETS, name)
-        ? { activePreset: name, bands: resolveBands(name, state.presetOverrides) }
+        ? { activePreset: name, bands: state.targetMode === 'vowel'
+          ? recommendVowelTargets(resolveBands(name, state.presetOverrides), name, getBandCenter(state.bands.f0.range))
+          : resolveBands(name, state.presetOverrides) }
         : {}),
 
       savePresetOverride: (key, f0, f1, f2) => set((state) => {
@@ -152,6 +166,7 @@ export const useAppStore = create<AppStore>()(
         presetOverrides: [],
         activePreset: 'vowel-a',
         bands: DEFAULT_BANDS,
+        targetMode: 'vowel',
       }),
 
       appendFrame: (frame) => set((state) => {
@@ -186,6 +201,7 @@ export const useAppStore = create<AppStore>()(
           bands: DEFAULT_BANDS,
           activePreset: 'vowel-a',
           presetOverrides: [],
+          targetMode: 'vowel',
           frames: [],
           latestFrame: null,
           stats: { f0Mean: null, hitRate: null, duration: 0 },
@@ -199,14 +215,32 @@ export const useAppStore = create<AppStore>()(
       partialize: (state) => ({
         presetOverrides: state.presetOverrides,
         config: state.config,
+        targetMode: state.targetMode,
+        activePreset: state.activePreset,
+        bands: state.bands,
       }),
       merge: (persisted, current) => {
-        const original = (persisted as Partial<AppState> | undefined)?.presetOverrides
+        const stored = persisted as Partial<AppState> | undefined
+        const original = stored?.presetOverrides
         const presetOverrides = normalizeOverrides(original)
         preserveMigrationBackup(original, presetOverrides)
-        const config = normalizeAppConfig((persisted as Partial<AppState> | undefined)?.config)
+        const config = normalizeAppConfig(stored?.config)
         recordingBuffer.resize(config.audioRetentionSeconds * AUDIO_SAMPLE_RATE)
-        return { ...current, config, frames: current.frames.slice(-retainedFrameCapacity(config.audioRetentionSeconds)), presetOverrides, bands: resolveBands(current.activePreset, presetOverrides) }
+        const storedMode = stored?.targetMode
+        const targetMode = storedMode === 'manual' || (storedMode == null && presetOverrides.length > 0) ? 'manual' : 'vowel'
+        const activePreset = typeof stored?.activePreset === 'string' && Object.prototype.hasOwnProperty.call(VOWEL_PRESETS, stored.activePreset)
+          ? stored.activePreset : 'vowel-a'
+        const fallback = resolveBands(activePreset, presetOverrides)
+        // 当前目标独立于逐元音覆盖保存：推荐模式切换元音时也必须保留当前 F0。
+        const restored = { ...fallback }
+        for (const key of ['f0', 'f1', 'f2'] as const) {
+          const range = stored?.bands?.[key]?.range
+          if (Array.isArray(range) && range.length === 2 && range.every(value => typeof value === 'number' && Number.isFinite(value)) && range[0] < range[1]) {
+            restored[key] = { ...fallback[key], range: [range[0], range[1]] }
+          }
+        }
+        const resolved = normalizeTargetBands(restored)
+        return { ...current, config, targetMode, activePreset, frames: current.frames.slice(-retainedFrameCapacity(config.audioRetentionSeconds)), presetOverrides, bands: targetMode === 'vowel' ? recommendVowelTargets(resolved, activePreset) : resolved }
       },
     }
   )

@@ -1,0 +1,5 @@
+.control { display: flex; flex-direction: column; gap: 7px; }
+.buttons { display: flex; gap: 5px; }
+.buttons button { flex: 1; border: 1px solid var(--border); border-radius: 7px; padding: 7px 3px; color: var(--text-soft); background: white; font: inherit; font-size: calc(10px * var(--font-scale)); cursor: pointer; }
+.buttons button[aria-pressed="true"] { border-color: var(--primary); color: var(--primary); background: var(--primary-soft); }
+.control p { margin: 0; font-size: calc(10px * var(--font-scale)); color: var(--text-soft); line-height: 1.7; }

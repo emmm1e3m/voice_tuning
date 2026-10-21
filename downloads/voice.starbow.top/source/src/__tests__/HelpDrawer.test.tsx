@@ -84,6 +84,7 @@ describe('integrated manual tutorial', () => {
     expect(screen.getByRole('img', { name: /wow 训练中/ })).toBeTruthy()
     expect(screen.getByRole('img', { name: '大狗小狗训练' })).toBeTruthy()
     fireEvent.click(screen.getByText('查看相关发声部位'))
+    fireEvent.click(screen.getByRole('button', { name: '舌位前后' }))
     expect(screen.getByRole('slider', { name: /舌位前后/ })).toBeTruthy()
     expect(screen.getByRole('link', { name: 'MTF 手册原文（离线）' }).getAttribute('href')).toMatch(/manual\/index\.html$/)
     fireEvent.click(screen.getByRole('button', { name: /下一章 F1/ }))

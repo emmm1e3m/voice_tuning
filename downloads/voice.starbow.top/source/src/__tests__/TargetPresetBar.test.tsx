@@ -5,16 +5,14 @@ import { useAppStore } from '../store/appStore'
 
 describe('TargetPresetBar', () => {
   beforeEach(() => useAppStore.getState().reset())
-  it('starts collapsed with a native summary and retains the selection after closing', () => {
+  it('starts expanded with a native summary and retains the selection after closing', () => {
     const { container } = render(<TargetPresetBar />)
     const details = container.querySelector('details')!
     const summary = container.querySelector('summary')!
-    expect(details.open).toBe(false)
+    expect(details.open).toBe(true)
     expect(summary.textContent).toContain('本次练习 · 目标中心')
     expect(summary.textContent).toContain('元音 a')
     expect(summary.querySelector('button')).toBeNull()
-    fireEvent.click(summary)
-    expect(details.open).toBe(true)
     fireEvent.click(screen.getByRole('button', { name: 'i' }))
     fireEvent.click(summary)
     expect(details.open).toBe(false)

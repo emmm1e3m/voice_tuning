@@ -67,7 +67,7 @@ describe('first-use help integration', () => {
       fireEvent.click(screen.getByRole('menuitem', { name: '帮助' }))
     } else fireEvent.click(screen.getByRole('button', { name: /帮助/ }))
     expect(track).toHaveBeenCalledTimes(3)
-    expect(track).toHaveBeenLastCalledWith('help_open', { page: 'analysis', topic: 'quick-start' })
+    expect(track).toHaveBeenLastCalledWith('help_open', { page: 'analysis', topic: 'foreword' })
   })
   it.each([true, false])('uses contextual controls and one first-use banner on both pages (portrait=%s)', portrait => {
     render(<TestApp />)

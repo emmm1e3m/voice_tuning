@@ -24,6 +24,17 @@ describe('frequency display settings', () => {
     await useChartDisplayStore.persist.rehydrate()
     expect(useChartDisplayStore.getState().frequencyScale).toBe('log')
   })
+  it('persists the register switch and enables it for older settings', async () => {
+    useChartDisplayStore.getState().setShowRegister(false)
+    const saved = localStorage.getItem(CHART_DISPLAY_STORAGE_KEY)!
+    useChartDisplayStore.setState({ showRegister: true })
+    localStorage.setItem(CHART_DISPLAY_STORAGE_KEY, saved)
+    await useChartDisplayStore.persist.rehydrate()
+    expect(useChartDisplayStore.getState().showRegister).toBe(false)
+    localStorage.setItem(CHART_DISPLAY_STORAGE_KEY, JSON.stringify({ state: { frequencyScale: 'linear' }, version: 0 }))
+    await useChartDisplayStore.persist.rehydrate()
+    expect(useChartDisplayStore.getState().showRegister).toBe(true)
+  })
 })
 
 describe('frequency chart geometry', () => {

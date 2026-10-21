@@ -35,5 +35,47 @@
   "limitations": [
     "未验证物理麦克风/扬声器音质和真实手机设备",
     "生产包仍有ECharts集中打包体积提示"
-  ]
+  ],
+  "latestRevision": {
+    "date": "2026-10-22",
+    "unitAndDsp": {
+      "files": 91,
+      "total": 716,
+      "passed": 716,
+      "failed": 0
+    },
+    "typecheck": "passed",
+    "build": {
+      "status": "passed",
+      "base": "/voice_tuning/",
+      "existingWarning": "ECharts主包超过500kB"
+    },
+    "browser": {
+      "engine": "Chromium",
+      "desktopViewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "mobileWidths": [
+        360,
+        390
+      ],
+      "pageErrors": 0,
+      "horizontalPageOverflow": false,
+      "realAudio": "assets/a.wav imported and playback started",
+      "registerSegments": 11,
+      "checks": [
+        "six vowel shapes and F0/F1/F2 references",
+        "six articulator controls synchronize structure and frequency",
+        "reference/current envelope equality on reset",
+        "F0 changes harmonic spacing while F1/F2 envelope stays unchanged",
+        "spectrum horizontal scroll confined to component",
+        "register toggle, scale and hidden curve independence",
+        "recommended/manual targets and persisted vowel/F0",
+        "foreword, README attribution, algorithm copy, structural hints"
+      ]
+    },
+    "evidenceDirectory": "downloads/voice.starbow.top/source/.validation",
+    "evidenceNote": "本机截图不提交；旧的顶层验证记录为前轮结果"
+  }
 }

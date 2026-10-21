@@ -52,7 +52,7 @@ export function ConfigDrawer({ open, onClose }: ConfigDrawerProps) {
               </label>
             ))}
           </div>
-          <p className={styles.hint}>生效于下次录音或导入。</p>
+          <p className={styles.hint}>算法从声音频谱估计 F1、F2：混合法优先使用 LPC，在结果缺失或 F1 异常跳变时尝试倒谱回退；纯 LPC 或纯倒谱可用于对比，但对低 F1、闭口元音等情况各有偏差。切换后从下一次录音或导入开始使用，已有曲线不会重新计算。</p>
         </section>
         <section className={styles.section}>
           <div className={styles.sectionHeading}>

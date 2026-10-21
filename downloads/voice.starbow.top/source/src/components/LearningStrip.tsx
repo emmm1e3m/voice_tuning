@@ -6,9 +6,9 @@ import { useAppStore } from '../store/appStore'
 import { getBandCenter } from '../config/targetBandRules'
 
 const DIMENSIONS = [
-  { key: 'f0', name: '音高' },
-  { key: 'f1', name: '元音与开口' },
-  { key: 'f2', name: '共振与音色' },
+  { key: 'f0', name: '音高', structure: '声带的张力、长度与有效振动质量' },
+  { key: 'f1', name: '元音与开口', structure: '舌位高低 · 下颌开口' },
+  { key: 'f2', name: '共振与音色', structure: '舌位前后 · 圆唇 · 声道长度' },
 ] as const
 
 export function LearningStrip({ onOpenHelp }: { onOpenHelp?: (topic: HelpTopic) => void }) {
@@ -29,6 +29,7 @@ export function LearningStrip({ onOpenHelp }: { onOpenHelp?: (topic: HelpTopic) 
             <span className={styles.separator}>/</span>
             <span className={styles.target} data-testid={`target-${item.key}`}>目标 {Math.round(getBandCenter(bands[item.key].range))} Hz</span>
           </span>
+          <span className={styles.structure}>{item.structure}</span>
         </button>
       ))}
       </div>

@@ -4,6 +4,7 @@ import { VOWEL_PRESETS, presetShortLabel } from '../../types'
 import { BandRangeRow } from '../BandRangeRow'
 import { ContextHelpButton } from '../ContextHelpButton'
 import { Icon } from '../Icon'
+import { TargetRecommendationControl } from '../TargetRecommendationControl'
 import type { HelpTopic } from '../../content/helpContent'
 import styles from './TrainingGoalCard.module.css'
 
@@ -30,6 +31,7 @@ export function TrainingGoalCard({ onOpenHelp }: { onOpenHelp?: (topic: HelpTopi
         ))}
       </div>
       <div className={styles.bands}>
+        <TargetRecommendationControl />
         {(['f0', 'f1', 'f2'] as const).map(key => (
           <div key={key} className={`${styles.band} ${styles[key]}`}>
             <div className={styles.bandHeader}>

@@ -1,5 +1,6 @@
 import type { TargetBands } from '../types'
 import { BAND_INPUT_LIMITS } from './analysisRanges'
+import { VOWEL_PRESETS } from '../types'
 
 export type TargetBandKey = 'f0' | 'f1' | 'f2'
 
@@ -13,6 +14,14 @@ export function getBandCenter(range: readonly [number, number]): number {
 export function rangeFromCenter(key: TargetBandKey, center: number): [number, number] {
   const half = TARGET_HALF_WIDTH_HZ[key]
   return [center - half, center + half]
+}
+
+// F0 只提供音高目标；共振峰参考独立取自元音预设，不能由 F0 推算个人声道。
+export function recommendVowelTargets(bands: TargetBands, presetName: string, f0Center = getBandCenter(bands.f0.range)): TargetBands {
+  const preset = VOWEL_PRESETS[presetName] ?? VOWEL_PRESETS['vowel-a']
+  const matches = (key: 'f1' | 'f2') => bands[key].range[0] === preset[key][0] && bands[key].range[1] === preset[key][1]
+  const recommended = normalizeTargetBands({ ...bands, f1: matches('f1') ? bands.f1 : { ...bands.f1, range: preset.f1 }, f2: matches('f2') ? bands.f2 : { ...bands.f2, range: preset.f2 } })
+  return updateTargetCenter(recommended, 'f0', f0Center)
 }
 
 export function getTargetCenterBounds(key: TargetBandKey, bands: TargetBands): [number, number] {

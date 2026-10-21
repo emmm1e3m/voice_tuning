@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { FeedbackCard } from '../components/FeedbackCard'
 import { useAppStore } from '../store/appStore'
 import { VOWEL_PRESETS } from '../types'
@@ -33,25 +33,9 @@ describe('FeedbackCard', () => {
     expect(screen.getAllByText('—').length).toBeGreaterThanOrEqual(1)
   })
 
-  it('shows register placeholder when no register data', () => {
+  it('leaves register presentation in the frequency chart', () => {
     render(<FeedbackCard />)
-    expect(screen.getByText('声区')).toBeTruthy()
-    expect(screen.getAllByText('—').length).toBeGreaterThanOrEqual(1)
-  })
-
-  it('shows register label for chest frame', () => {
-    useAppStore.getState().setFrames([{ time: 0.1, f0: 220, f1: 900, f2: 1250, register: 'chest' }])
-    render(<FeedbackCard />)
-    expect(screen.getByText('真声')).toBeTruthy()
-  })
-
-  it('shows register explanation tip and reveals it on click', () => {
-    render(<FeedbackCard />)
-    const tipButton = screen.getByRole('button', { name: '声区说明' })
-    expect(tipButton).toBeTruthy()
-
-    fireEvent.click(tipButton)
-    expect(screen.getByText(/声区基于泛音丰富度判断/)).toBeTruthy()
+    expect(screen.queryByText('声区')).toBeNull()
   })
 
   it('shows real-time F0/F1/F2 values in Hz', () => {
@@ -98,11 +82,11 @@ describe('FeedbackCard', () => {
     expect(screen.getByText('F2')).toBeTruthy()
   })
 
-  it('keeps all live frequencies and voice register when every chart curve is hidden', () => {
+  it('keeps all live frequencies when every chart curve is hidden', () => {
     for (const key of ['f0', 'f1', 'f2'] as const) useAppStore.getState().toggleFormantVisible(key)
     useAppStore.getState().setFrames([{ time: 1, f0: 220, f1: 900, f2: 1250, register: 'mixed' }])
     render(<FeedbackCard />)
-    expect(screen.getByText('混声')).toBeTruthy()
+    expect(screen.queryByText('混声')).toBeNull()
     for (const value of ['220 Hz', '900 Hz', '1250 Hz']) expect(screen.getByText(value)).toBeTruthy()
   })
 })

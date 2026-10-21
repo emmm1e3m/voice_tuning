@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { act, fireEvent, render, screen, within } from '@testing-library/react'
+import { act, render, screen, within } from '@testing-library/react'
 import { FeedbackHero, statusGlyph } from '../components/mobile/FeedbackHero'
 import { useAppStore } from '../store/appStore'
 import type { FormantStatus } from '../feedback/status'
@@ -35,8 +35,7 @@ describe('FeedbackHero', () => {
 
   it('shows only frequency placeholders before any frame arrives', () => {
     render(<FeedbackHero />)
-    expect(screen.getByText('声区')).toBeTruthy()
-    expect(screen.getByText('—')).toBeTruthy()
+    expect(screen.queryByText('声区')).toBeNull()
     expect(screen.getByTestId('hero-f0').textContent).toBe('--')
     expect(screen.queryAllByText('Hz')).toHaveLength(0)
   })
@@ -47,23 +46,13 @@ describe('FeedbackHero', () => {
     expect(screen.getByTestId('hero-f0').textContent).toBe('245')
   })
 
-  it.each([
-    ['chest', '真声'], ['mixed', '混声'], ['falsetto', '假声'], ['unvoiced', '—'], [null, '—'], [undefined, '—'],
-  ] as const)(
-    'displays the current voice register for %s', (register, label) => {
-    setFrame(240, 900, 1200, register)
-    render(<FeedbackHero />)
-    expect(screen.getByText('声区')).toBeTruthy()
-    expect(screen.getByText(label)).toBeTruthy()
-  })
-
-  it('keeps every live frequency and voice register when all chart curves are hidden', () => {
+  it('keeps every live frequency when all chart curves are hidden', () => {
     for (const key of ['f0', 'f1', 'f2'] as const) useAppStore.getState().toggleFormantVisible(key)
     setFrame(240, 900, 1200, 'falsetto')
     render(<FeedbackHero />)
     expect(screen.getByRole('region', { name: '实时反馈' })).toBeTruthy()
     for (const key of ['f0', 'f1', 'f2']) expect(screen.getByTestId(`hero-col-${key}`)).toBeTruthy()
-    expect(screen.getByText('假声')).toBeTruthy()
+    expect(screen.queryByText('声区')).toBeNull()
   })
 
   it('renders F0/F1/F2 values inline in one row', () => {
@@ -123,7 +112,7 @@ describe('FeedbackHero', () => {
     expect(screen.getByLabelText('F0 300 Hz，高于目标范围')).toBe(high)
     expect(screen.getByLabelText('F1 700 Hz，低于目标范围')).toBe(low)
     expect(screen.getByLabelText('F2 1200 Hz，目标范围内')).toBe(hit)
-    expect(screen.getByText('混声')).toBeTruthy()
+    expect(screen.queryByText('声区')).toBeNull()
   })
 
   it.each([
@@ -163,21 +152,13 @@ describe('FeedbackHero', () => {
     expect(cell.textContent).not.toMatch(/[↑↓]/)
     expect(within(cell).getByText('✓')).toBeTruthy()
     act(() => useAppStore.getState().switchPreset('vowel-a'))
-    expect(cell.getAttribute('data-status')).toBe('high')
+    expect(cell.getAttribute('data-status')).toBe('hit')
     act(() => setFrame(190, 900, 1200, 'falsetto'))
     expect(cell.getAttribute('data-status')).toBe('low')
     expect(within(cell).getByText('↓')).toBeTruthy()
-    expect(screen.getByText('假声')).toBeTruthy()
+    expect(screen.queryByText('声区')).toBeNull()
     act(() => useAppStore.getState().toggleFormantVisible('f1'))
     expect(screen.getByTestId('hero-col-f1').textContent).toContain('900')
   })
 
-  it('offers voice register details without leaving the live results', () => {
-    setFrame(240, 900, 1200, 'chest')
-    render(<FeedbackHero />)
-    fireEvent.click(screen.getByRole('button', { name: '声区说明' }))
-    expect(screen.getByText(/根据泛音丰富度估计声区/)).toBeTruthy()
-    expect(screen.getByText('真声')).toBeTruthy()
-    expect(screen.getByTestId('hero-f0').textContent).toBe('240')
-  })
 })

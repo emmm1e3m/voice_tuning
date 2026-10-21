@@ -4,6 +4,7 @@ import { usePresetBands } from '../hooks/usePresetBands'
 import { BandRangeRow } from './BandRangeRow'
 import { ContextHelpButton } from './ContextHelpButton'
 import { Icon } from './Icon'
+import { TargetRecommendationControl } from './TargetRecommendationControl'
 import styles from './TargetPresetBar.module.css'
 import type { HelpTopic } from '../content/helpContent'
 
@@ -14,7 +15,7 @@ export function TargetPresetBar({ onOpenHelp }: { onOpenHelp?: (topic: HelpTopic
   const vowelKeys = Object.keys(VOWEL_PRESETS)
 
   return (
-    <details className={styles.bar} aria-label="练习目标中心"
+    <details open className={styles.bar} aria-label="练习目标中心"
       onToggle={event => { if (!event.currentTarget.open) api.showInputMessage('f0', '') }}>
       <summary className={styles.summary}>
         <span className={styles.label}>本次练习 · 目标中心</span>
@@ -37,6 +38,7 @@ export function TargetPresetBar({ onOpenHelp }: { onOpenHelp?: (topic: HelpTopic
           ))}
         </div>
         <div className={styles.inputs}>
+          <TargetRecommendationControl />
           {(['f0', 'f1', 'f2'] as const).map(key => (
             <div key={key} className={styles.bandGroup}>
               <div className={styles.bandHeading}>

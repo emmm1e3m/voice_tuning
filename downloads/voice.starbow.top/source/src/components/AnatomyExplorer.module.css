@@ -4,9 +4,9 @@
 .focusBar button[aria-pressed='true'] { border-color: #d8dbe9; background: #f0eff7; color: #595084; font-weight: 650; }
 .focusBar button:focus-visible, .presets button:focus-visible { outline: 2px solid #77719c; outline-offset: 2px; }
 .focusText { font-size: calc(12px * var(--font-scale)); padding: 0 16px; color: #555c70; line-height: 1.8; }
-/* 图示与动作控件分成上下两区，保证结构图和放大后的标签有足够空间。 */
-.diagramLayout { display: grid; grid-template-columns: 1fr; align-items: start; border-top: 1px solid #ececf2; }
-.diagram { padding: 10px 0; width: 100%; max-width: 660px; margin: 0 auto; }
+/* 一次调整一个部位，频率反馈紧邻滑块，避免滚动后失去观察对象。 */
+.diagramLayout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(450px, 1.1fr); align-items: start; border-top: 1px solid #ececf2; }
+.diagram { padding: 10px 0 18px; width: 100%; max-width: 660px; margin: 0 auto; }
 .diagram svg { display: block; width: 100%; height: auto; }
 .head { fill: #faf4ee; stroke: #c3b5aa; stroke-width: 2; }
 .nasal { fill: #e9eff3; stroke: #becbd4; stroke-width: 1.5; }
@@ -16,6 +16,8 @@
 .tongue { fill: #e6b7b6; stroke: #b77f84; stroke-width: 2; }
 .tongue[data-focused='true'] { stroke: #ab5774; stroke-width: 3; }
 .tongueDetail { fill: none; stroke: #d59da5; stroke-width: 1.5; }
+.reference { fill: none; stroke: #857b8a; stroke-width: 1.2; stroke-dasharray: 4 4; opacity: .65; pointer-events: none; }
+.motion { fill: none; stroke: #5f5689; stroke-width: 1.8; pointer-events: none; }
 .hyoid { fill: none; stroke: #aa985e; stroke-width: 7; stroke-linecap: round; }
 .epiglottis { fill: #d3c8a9; stroke: #a59670; stroke-width: 1.5; }
 .esophagus { fill: none; stroke: #cbbeb1; stroke-width: 3; }
@@ -25,38 +27,97 @@
 .trachea { fill: none; stroke: #a9b8c8; stroke-width: 3; }
 .tracheaRing { fill: none; stroke: #c1ccd6; stroke-width: 2; }
 .flow { fill: none; stroke: #6d9fb6; stroke-width: 2; stroke-dasharray: 5 5; }
-.labels { fill: #4f5669; font-family: var(--font-sans, sans-serif); font-size: calc(12px * var(--font-scale)); }
+.labels { fill: #4f5669; font-family: var(--font-sans, sans-serif); font-size: calc(17px * var(--font-scale)); }
 .labels path { fill: none; stroke: #a1a5b0; stroke-width: 1; }
 .inset { fill: #faf9fc; stroke: #dcd7e4; }
-.insetLabel { fill: #6c6578; font: calc(10px * var(--font-scale)) var(--font-sans, sans-serif); }
+.insetLabel { fill: #6c6578; font: calc(14px * var(--font-scale)) var(--font-sans, sans-serif); }
 .foldBody { fill: #dfc7d3; stroke: #bd9bad; stroke-width: 1.5; }
 .foldEdge { fill: none; stroke: #8b688a; stroke-width: 2; }
 .foldEdge[data-focused='true'] { stroke: #6d4b9a; stroke-width: 3; }
 .caption { margin: 5px 18px; color: #757784; font-size: calc(11px * var(--font-scale)); line-height: 1.7; }
-.controls { border-top: 1px solid #ececf2; padding: 14px 16px; background: #fcfcfe; display: grid; grid-template-columns: 1fr 1fr; gap: 12px 22px; }
-.presets { display: flex; flex-wrap: wrap; align-items: center; grid-column: 1 / -1; gap: 8px; margin-bottom: 3px; font-size: calc(11px * var(--font-scale)); }
+.controls { min-width: 0; border-left: 1px solid #ececf2; padding: 14px; background: #fcfcfe; display: grid; grid-template-columns: 1fr; gap: 10px; }
+.partSelector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.partSelector button { min-height: 34px; padding: 5px; border: 1px solid #dedce8; border-radius: 8px; background: #fff; color: #666175; font: inherit; font-size: calc(11px * var(--font-scale)); cursor: pointer; }
+.partSelector button[aria-pressed='true'] { color: #655088; background: #eeebf5; border-color: #b6a6ca; font-weight: 600; }
+.partSelector button:focus-visible { outline: 2px solid #82729d; outline-offset: 2px; }
+.presets { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 0 16px 14px; font-size: calc(11px * var(--font-scale)); }
 .presets > span { color: #6d7180; margin-right: 3px; }
 .presets button { min-height: 36px; padding: 5px 7px; border: 1px solid #dfe1e9; border-radius: var(--radius-sm, 10px); color: #57536a; font: inherit; background: white; cursor: pointer; }
+.presets button[aria-pressed='true'] { background: #eeebf5; color: #655088; border-color: #b6a6ca; font-weight: 700; }
 .control { padding: 11px 12px; border: 1px solid #e8e3ed; border-radius: var(--radius-sm, 10px); background: #fff; }
+.control[data-active='true'] { border-color: #b4a6cd; box-shadow: 0 0 0 2px #ede8f4; }
 .control label { display: flex; justify-content: space-between; color: #505364; font-size: calc(12px * var(--font-scale)); font-weight: 600; }
 .control label span { font-weight: 400; color: #777987; font-size: calc(11px * var(--font-scale)); }
+.control[data-control-focus='f0'] label span { color: #8061ac; }
+.control[data-control-focus='f1'] label span { color: #b24873; }
+.control[data-control-focus='f2'] label span { color: #3a73aa; }
 .control input { display: block; width: 100%; accent-color: #82729d; margin: 6px 0; min-height: 28px; cursor: pointer; }
 .control[data-control-focus='f1'] input { accent-color: #d76e97; }
 .control[data-control-focus='f2'] input { accent-color: #5c92c7; }
 .control p { margin: 3px 0; color: #747784; font-size: calc(11px * var(--font-scale)); line-height: 1.7; }
+.sliderEnds { display: flex; justify-content: space-between; color: #7c7e8c; font-size: calc(10px * var(--font-scale)); margin: -5px 0 6px; }
+.referenceToggle { display: flex; align-items: center; gap: 5px; margin-left: auto; color: #6d7180; cursor: pointer; }
+.referenceToggle input { accent-color: #82729d; width: 16px; height: 16px; }
+.acoustics { min-width: 0; padding: 12px; background: #f8f8fc; border: 1px solid #e5e4ef; border-radius: 12px; }
+.acousticHeading { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; color: #4f4a61; font-size: calc(12px * var(--font-scale)); }
+.acousticHeading > span { color: #82808e; font-size: calc(10px * var(--font-scale)); }
+.frequencyReadouts { margin: 6px 0 10px; }
+.frequencyReadout { --frequency-color: #8962b9; display: grid; grid-template-columns: 30px 1fr 70px; gap: 5px; align-items: baseline; padding: 3px 0; font-size: calc(11px * var(--font-scale)); color: #726b80; font-variant-numeric: tabular-nums; }
+.frequencyReadout[data-frequency='f1'] { --frequency-color: #cc638e; }
+.frequencyReadout[data-frequency='f2'] { --frequency-color: #4b88c3; }
+.frequencyReadout strong, .frequencyReadout b, .frequencyReadout output { color: var(--frequency-color); }
+.frequencyReadout output { text-align: right; }
+.spectrum { min-width: 0; }
+.spectrumScroll { width: 100%; max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin; }
+.spectrumScroll:focus-visible { outline: 2px solid #82729d; outline-offset: 2px; }
+.spectrumLegend { display: flex; gap: 6px 10px; flex-wrap: wrap; color: #82798d; font-size: calc(9px * var(--font-scale)); }
+.spectrumLegend span:nth-child(2) { color: #716184; }
+.spectrumLegend span:nth-child(3) { color: #759caf; }
+.spectrum svg { width: 100%; min-width: 390px; height: auto; display: block; }
+.spectrum svg text { fill: #767080; font: 22px var(--font-sans, sans-serif); }
+.spectrum svg .spectrumAxisLabel { font-size: 22px; }
+.spectrumGrid { stroke: #e4e0e9; stroke-width: 1; fill: none; }
+.spectrumAxis { stroke: #a29aa9; stroke-width: 1.5; fill: none; }
+.harmonic { stroke: #8dafc1; stroke-width: 2; opacity: .6; }
+.referenceEnvelope { fill: none; stroke: #a69ba9; stroke-dasharray: 7 5; stroke-width: 3; }
+.currentEnvelope { fill: none; stroke: #796389; stroke-width: 3.5; }
+.peakMarker { fill: none; stroke: #cc638e; stroke-width: 1.5; }
+.peakMarker[data-frequency='f2'] { stroke: #4b88c3; }
+.spectrum svg .peakMarker text { fill: #b34b77; stroke: none; font-size: 23px; font-weight: 600; paint-order: stroke; }
+.spectrum svg .peakMarker[data-frequency='f2'] text { fill: #3c79b3; }
+.referencePeak { opacity: .55; stroke-dasharray: 4 5; }
+.fundamental { fill: none; stroke: #8962b9; stroke-width: 2; }
+.referenceFundamental { fill: none; stroke: #a69ba9; stroke-width: 2; stroke-dasharray: 4 4; }
+.spectrum svg .referenceFundamentalLabel { fill: #8a7f91; font-size: 20px; }
+.spectrum svg .fundamentalLabel { fill: #8962b9; font-size: 21px; font-weight: 600; }
+.f0Explanation { margin: 6px 0 0; color: #6a5d7b; font-size: calc(10px * var(--font-scale)); line-height: 1.6; }
+.modelNote { color: #797485; font-size: calc(10px * var(--font-scale)); line-height: 1.6; margin: 8px 0 0; }
+.sources { border-top: 1px solid #ececf2; padding: 14px 18px; font-size: calc(11px * var(--font-scale)); line-height: 1.8; color: #6c687a; }
+.sources summary { cursor: pointer; color: #615571; }
+.sources p { margin: 10px 0; }
+.sources ul { margin: 0; padding-left: 20px; }
+.sources a { color: #556e98; text-underline-offset: 3px; }
 .explorer[data-focus='f0'] .controls { grid-template-columns: 1fr; }
 .explorer[data-focus='f0'] .tongue, .explorer[data-focus='f0'] .tongueDetail, .explorer[data-focus='f0'] .jaw { opacity: .4; }
 .explorer[data-focus='f1'] .larynx, .explorer[data-focus='f1'] .folds, .explorer[data-focus='f1'] .foldBody, .explorer[data-focus='f1'] .foldEdge { opacity: .45; }
 .explorer[data-focus='f1'] .jaw { stroke: #d76e97; stroke-width: 8; }
 .lipHighlight { fill: none; stroke: #5c92c7; stroke-width: 4; stroke-linecap: round; }
+@media (max-width: 1180px) {
+  .diagramLayout { grid-template-columns: 1fr; }
+  .controls { border-left: 0; border-top: 1px solid #ececf2; }
+  .diagram { max-width: 470px; padding-bottom: 5px; }
+  .partSelector { grid-template-columns: repeat(3, 1fr); }
+}
 @media (max-width: 600px) {
   .controls { padding: 12px; gap: 10px; }
   .control { padding: 10px; }
-  .labels { font-size: calc(17px * var(--font-scale)); }
-  .insetLabel { font-size: calc(12px * var(--font-scale)); }
+  .labels { font-size: calc(21px * var(--font-scale)); }
+  .insetLabel { font-size: calc(16px * var(--font-scale)); }
   .focusBar { justify-content: space-between; padding: 10px 10px 0; }
   .focusBar button { padding: 6px 10px; }
   .control label { flex-wrap: wrap; gap: 4px; }
+  .referenceToggle { margin-left: 0; }
+  .acoustics { padding: 10px; }
 }
 @media (max-width: 480px) {
   .control label, .focusText { font-size: calc(11px * var(--font-scale)); }

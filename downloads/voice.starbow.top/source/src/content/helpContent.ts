@@ -4,7 +4,7 @@ import { VOWEL_PRESETS, presetShortLabel, DEFAULT_CONFIG, type AppConfig } from 
 import { MANUAL_LESSONS, type ReviewQuestion } from './manualLessons'
 import type { AnatomyFocus } from '../components/AnatomyExplorer'
 
-export type HelpTopic = 'quick-start' | 'anatomy' | 'source-filter' | 'perception' | 'f0' | 'f2' | 'f1' | 'practice-guide' | 'charts' | 'targets' | 'audio' | 'troubleshooting' | 'pitch-reference' | 'praat' | 'extra'
+export type HelpTopic = 'foreword' | 'quick-start' | 'anatomy' | 'source-filter' | 'perception' | 'f0' | 'f2' | 'f1' | 'practice-guide' | 'charts' | 'targets' | 'audio' | 'troubleshooting' | 'pitch-reference' | 'praat' | 'extra'
 export type HelpLayout = 'portrait' | 'landscape'
 export interface HelpSection {
   title: string
@@ -18,17 +18,17 @@ export interface HelpSection {
   visualization?: 'source-filter' | 'vowel-map' | 'chart-reading'
 }
 type HelpConfig = Pick<AppConfig, 'audioRetentionSeconds' | 'formantSmoothingWindow'>
-export const HELP_TOPIC_ORDER: readonly HelpTopic[] = ['quick-start', 'anatomy', 'source-filter', 'perception', 'f0', 'f2', 'f1', 'practice-guide', 'charts', 'targets', 'audio', 'pitch-reference', 'extra', 'praat', 'troubleshooting']
-export const LEARNING_TOPIC_ORDER: readonly HelpTopic[] = ['quick-start', 'anatomy', 'source-filter', 'perception', 'f0', 'f2', 'f1', 'practice-guide', 'extra']
+export const HELP_TOPIC_ORDER: readonly HelpTopic[] = ['foreword', 'quick-start', 'anatomy', 'source-filter', 'perception', 'f0', 'f2', 'f1', 'practice-guide', 'charts', 'targets', 'audio', 'pitch-reference', 'extra', 'praat', 'troubleshooting']
+export const LEARNING_TOPIC_ORDER: readonly HelpTopic[] = ['foreword', 'quick-start', 'anatomy', 'source-filter', 'perception', 'f0', 'f2', 'f1', 'practice-guide', 'extra']
 export const HELP_TOPIC_GROUPS: readonly { label: string; topics: readonly HelpTopic[] }[] = [
-  { label: '从这里开始', topics: ['quick-start'] },
+  { label: '从这里开始', topics: ['foreword', 'quick-start'] },
   { label: '理解声音', topics: ['anatomy', 'source-filter', 'perception'] },
   { label: '实际练习', topics: ['f0', 'f2', 'f1', 'practice-guide'] },
   { label: '工具查阅', topics: ['charts', 'targets', 'audio', 'pitch-reference'] },
   { label: '进阶与排错', topics: ['extra', 'praat', 'troubleshooting'] },
 ]
 const TITLES: Record<HelpTopic, string> = {
-  'quick-start': '快速上手', anatomy: '发声部位与动作', 'source-filter': '先理解声音', perception: '元音与性别感知',
+  foreword: '写在前面', 'quick-start': '快速上手', anatomy: '发声部位与动作', 'source-filter': '先理解声音', perception: '元音与性别感知',
   f0: 'F0 · 音高', f2: 'F2 · 共振与元音', f1: 'F1 · 开口与元音', 'practice-guide': '组合练习',
   charts: '读图与反馈', targets: '训练目标', audio: '录音与导入', 'pitch-reference': '音高参考',
   extra: '气流、语调与音色', praat: '用 Praat 深入分析', troubleshooting: '遇到问题',
@@ -43,7 +43,7 @@ export function getQuickStartSteps(layout: HelpLayout, config: HelpConfig = DEFA
       ? '点击底部麦克风按钮开始录音；首次使用时，按浏览器提示允许麦克风权限。先自然地说一句「今天的天气很好」，再点击同一按钮停止。'
       : '点击顶栏「开始录音」；首次使用时，按浏览器提示允许麦克风权限。先自然地说一句「今天的天气很好」，再点击「停止录音」。' },
     { title: '回放，再看三条曲线', description: `点击「回放」，先听自己的声音。图中 F0 紫、F1 粉、F2 蓝，曲线和目标区域保持同色：F0 对应声音高低，F1、F2 帮助观察元音和共振。上方三个数值概括当前保留窗口；侧边或底部反馈跟随最新声音。` },
-    { title: '选择目标，开始一次短练习', description: `${layout === 'portrait' ? '点击底部「当前目标」' : '展开左侧「本次练习 · 目标中心」'}，先选 a，再调整 F0、F1、F2 的目标中心。数字输入失焦或按 Enter 生效，滑杆实时生效。先短发一个 a（啊），停止并回放；接着点击 F0 的帮助图标学习怎样调整。当前保留最近 ${config.audioRetentionSeconds} 秒，可在「配置 → 保留时长」修改。` },
+    { title: '选择目标，开始一次短练习', description: `${layout === 'portrait' ? '点击底部「当前目标」' : '在左侧「本次练习 · 目标中心」'}先选 a，设置舒适的 F0；「按元音推荐」会填入该元音的 F1、F2 参考区间，也可切到「手动」调整。数字输入失焦或按 Enter 生效，滑杆实时生效。先短发一个 a（啊），停止并回放；接着点击 F0 的帮助图标学习怎样调整。当前保留最近 ${config.audioRetentionSeconds} 秒，可在「配置 → 保留时长」修改。` },
   ] as const
 }
 export function getPresetRows() {
@@ -51,15 +51,15 @@ export function getPresetRows() {
 }
 
 export function getHelpSections(topic: HelpTopic, layout: HelpLayout, config: HelpConfig = DEFAULT_CONFIG): readonly HelpSection[] {
-  const targetsEntry = layout === 'portrait' ? '底部「当前目标」' : '左侧「本次练习 · 目标中心」（点击标题展开）'
+  const targetsEntry = layout === 'portrait' ? '底部「当前目标」' : '左侧「本次练习 · 目标中心」'
   const importEntry = layout === 'portrait' ? '右上角「更多 → 导入音频」' : '顶栏「导入音频」'
   const downloadEntry = layout === 'portrait' ? '右上角「更多 → 下载 WAV」' : '顶栏「下载 WAV」'
   const sections = getQuickStartSteps(layout, config).map(step => ({ title: step.title, paragraphs: [step.description] }))
   switch (topic) {
+    case 'foreword': return manual(3, 4)
     case 'quick-start': return [
       ...sections,
       { title: '接下来怎样读、怎样练', paragraphs: ['第一次接触时，按「发声部位与动作 → 先理解声音 → 元音与性别感知」建立基本概念，再依次练 F0、F2、F1。练习中忘记哪个部位或图上哪条线，随时用目录回到对应章节。'], steps: ['认识声带、舌、下颌和嘴唇，在交互图里试着移动它们。', '分清声带产生的音高，与声道塑造的元音音色。', '每次选一项短练，录音、回放、观察；再把它带进词语和日常说话。'] },
-      ...manual(3, 4),
     ]
     case 'anatomy': return [
       { title: '先在图里找到部位', paragraphs: ['气流从肺部经过气管，在声带处形成有声振动，再经过咽腔、口腔从嘴唇辐射出来。先调图中的部位，随后对照下面的结构图与肌肉说明。'], anatomyFocus: 'all' },
@@ -97,6 +97,7 @@ export function getHelpSections(topic: HelpTopic, layout: HelpLayout, config: He
     ]
     case 'targets': return [
       { title: '先选择元音', paragraphs: [`在${targetsEntry}选择 a、o、e、i、u、ü，每个元音保存自己的目标中心。比较 F1、F2 时，先把选择器切到正在发的元音。`] },
+      { title: '按元音推荐或手动调整', paragraphs: ['先设置容易保持的 F0，再用「按元音推荐」填入当前元音的 F1、F2 参考区间：开口元音通常有较高 F1，闭口元音有较低 F1；前元音通常有较高 F2，后元音与圆唇会让 F2 降低。', '这些区间来自元音参考预设，用来开始比较练习。F0 由声带振动决定，F1、F2 由声道形状决定，单凭 F0 不能算出个人真实共振峰；听回放后可切到「手动」设置适合自己的中心。'] },
       { title: '一个中心，一个滑杆', paragraphs: ['每项只需设置中心值。拖动滑杆实时调整，数字输入在按 Enter 或失焦时保存；超出可用范围时会调整到边界。'], steps: [`F0：中心上下各 ${TARGET_HALF_WIDTH_HZ.f0} Hz。`, `F1：中心上下各 ${TARGET_HALF_WIDTH_HZ.f1} Hz。`, `F2：中心上下各 ${TARGET_HALF_WIDTH_HZ.f2} Hz。`] },
       { title: '怎样选择自己的中心', paragraphs: ['先录一段容易重复、听感合适的单元音，观察稳定片段，再把相应数值设为中心。彩色窗口帮助你保持一致，也方便比较前后变化。', `F0 目标窗口位于 ${F0_CHART_RANGE.min}–${F0_CHART_RANGE.max} Hz，F1、F2 位于 ${FORMANT_CHART_RANGE.min}–${FORMANT_CHART_RANGE.max} Hz 内；中心会预留窗口半宽，并保持 F1 上沿不高于 F2 下沿。`, '同一个元音多试几次再修改中心。数字越高并不自动代表更女性化，先听元音、音色与整句话是否符合你的目标。'] },
       { title: '恢复默认预设', paragraphs: ['点击重置图标并确认，会恢复全部元音的默认中心，并切回 a。下表列出默认中心与固定窗口，便于重新开始练习。'] },

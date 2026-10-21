@@ -9,6 +9,7 @@ import { EmptyState } from '../components/EmptyState'
 import { ContextHelpButton } from '../components/ContextHelpButton'
 import { LearningStrip } from '../components/LearningStrip'
 import { FrequencyScaleControl } from '../components/FrequencyScaleControl'
+import { RegisterLegend } from '../components/RegisterLegend'
 import { FREQUENCY_COLORS } from '../utils/frequencyChart'
 import styles from './AnalysisPage.module.css'
 
@@ -37,6 +38,7 @@ export function AnalysisWorkspace({ layout }: { layout: 'landscape' | 'portrait'
                   {(['f0', 'f1', 'f2'] as const).map(key => <button key={key} type="button" className={styles.legendItem} aria-pressed={visible[key]} data-key={key} data-active={String(visible[key])} onClick={() => toggle(key)}><i style={{ background: FREQUENCY_COLORS[key] }} />{key.toUpperCase()}</button>)}
                 </div>
               </div>
+              <RegisterLegend />
               <div className={styles.chartArea}>
                 <FormantChart cursorTime={cursorTime} />
                 <EmptyState title="尚无音频" description={portrait ? '点击下方麦克风开始录音' : `开始录音，或导入不超过 ${seconds} 秒的音频`} visible={!hasData} />

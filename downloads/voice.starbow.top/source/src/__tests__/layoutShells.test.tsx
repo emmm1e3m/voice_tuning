@@ -301,7 +301,7 @@ describe('portrait analysis structure', () => {
     expect(document.querySelectorAll('header button[id]').length).toBe(7)
   })
 
-  it('preserves the same frame and register across responsive layouts', () => {
+  it('preserves the same frame and register legend across responsive layouts', () => {
     const resize = setMatchMedia(false)
     useAppStore.getState().setFrames([
       { time: 1, f0: 300, f1: 700, f2: 1200, register: 'chest' },

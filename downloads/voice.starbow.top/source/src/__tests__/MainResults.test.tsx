@@ -39,6 +39,9 @@ describe('main window frequency results', () => {
     expect(results.compareDocumentPosition(screen.getByRole('main')) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
     expect(screen.queryByText('听见变化，看见进步。')).toBeNull()
     expect(screen.queryByText('练习的方向，由你定义。')).toBeNull()
+    expect(within(results).getByText('声带的张力、长度与有效振动质量')).toBeTruthy()
+    expect(within(results).getByText('舌位高低 · 下颌开口')).toBeTruthy()
+    expect(within(results).getByText('舌位前后 · 圆唇 · 声道长度')).toBeTruthy()
   })
 
   it('refreshes the displayed results when the retention window changes', () => {

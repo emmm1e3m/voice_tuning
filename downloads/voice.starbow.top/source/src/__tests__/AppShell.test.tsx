@@ -81,13 +81,13 @@ describe('AppShell', () => {
     expect(screen.getByText('practice-content 3')).toBeDefined()
   })
 
-  it.each(['idle', 'recording', 'playing'])('opens quick-start without audio actions while %s', mode => {
+  it.each(['idle', 'recording', 'playing'])('opens the foreword without audio actions while %s', mode => {
     audioState.capturing = mode === 'recording'
     audioState.playing = mode === 'playing'
     renderApp('/')
     expect(screen.queryByRole('dialog')).toBeNull()
     fireEvent.click(screen.getByRole('button', { name: /帮助/ }))
-    expect(screen.getByRole('button', { name: '快速上手' }).getAttribute('aria-pressed')).toBe('true')
+    expect(screen.getByRole('button', { name: '写在前面' }).getAttribute('aria-pressed')).toBe('true')
     fireEvent.click(screen.getByRole('button', { name: '关闭' }))
     expect(audioAction).not.toHaveBeenCalled()
   })

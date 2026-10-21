@@ -6,7 +6,7 @@ import { DEFAULT_CONFIG, VOWEL_PRESETS } from '../types'
 import { MANUAL_LESSONS } from '../content/manualLessons'
 
 it('provides a continuous path from first recording through theory, practice and troubleshooting', () => {
-  expect(HELP_TOPIC_ORDER[0]).toBe('quick-start')
+  expect(HELP_TOPIC_ORDER.slice(0, 2)).toEqual(['foreword', 'quick-start'])
   expect(HELP_TOPIC_ORDER[HELP_TOPIC_ORDER.length - 1]).toBe('troubleshooting')
   expect(HELP_TOPIC_GROUPS.flatMap(group => [...group.topics])).toEqual(HELP_TOPIC_ORDER)
   for (const topic of HELP_TOPIC_ORDER) {
@@ -14,6 +14,8 @@ it('provides a continuous path from first recording through theory, practice and
     expect(getHelpSections(topic, 'portrait').length).toBeGreaterThan(0)
   }
   expect(getRelatedHelpTopics('f2')).toEqual(['f0', 'f1'])
+  expect(getHelpSections('foreword', 'landscape').map(section => section.title)).toEqual(['为什么练习声音女性化', '避免练习误区'])
+  expect(getHelpSections('quick-start', 'landscape').some(section => section.title === '为什么练习声音女性化')).toBe(false)
 })
 it('integrates substantive manual theory, training and all 26 original images', () => {
   const lessons = HELP_TOPIC_ORDER.flatMap(topic => [...getHelpSections(topic, 'landscape')])

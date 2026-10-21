@@ -9,6 +9,8 @@ import { FREQUENCY_COLORS, frequencyAxis, frequencyColor, validFrequency, validF
 import { chartTimeAxis } from '../utils/chartTimeline'
 import { CHART_FONT_SCALE, formatFrequencyPreview, formatTimePreview } from '../utils/chartFormatting'
 import { getBandCenter } from '../config/targetBandRules'
+import { REGISTER_COLORS, registerSegments } from '../utils/registerSegments'
+import { VOICE_REGISTER_LABELS } from '../feedback/register'
 
 const KEYS = ['f0', 'f1', 'f2'] as const
 
@@ -23,6 +25,7 @@ export function FormantChart({ cursorTime = -1, onFrameClick }: FormantChartProp
   const visible = useAppStore(s => s.formantVisible)
   const retentionSeconds = useAppStore(s => s.config.audioRetentionSeconds)
   const scale = useChartDisplayStore(s => s.frequencyScale)
+  const showRegister = useChartDisplayStore(s => s.showRegister)
   const { chartRef, setOption, getInstance } = useECharts()
   const isPortrait = useMediaQuery('(max-width: 768px)')
   const hasFrameClick = Boolean(onFrameClick)
@@ -35,11 +38,11 @@ export function FormantChart({ cursorTime = -1, onFrameClick }: FormantChartProp
       rafRef.current = null
     })
     return () => { if (rafRef.current !== null) cancelAnimationFrame(rafRef.current) }
-  }, [frames, bands, visible, scale, isPortrait, hasFrameClick, retentionSeconds]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [frames, bands, visible, scale, showRegister, isPortrait, hasFrameClick, retentionSeconds]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     renderChart()
-  }, [cursorTime, bands, visible, scale, isPortrait, hasFrameClick, retentionSeconds]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [cursorTime, bands, visible, scale, showRegister, isPortrait, hasFrameClick, retentionSeconds]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // 点击仍按原始时间查找数据帧，切换坐标轴不影响回放或选帧。
   useEffect(() => {
@@ -61,6 +64,7 @@ export function FormantChart({ cursorTime = -1, onFrameClick }: FormantChartProp
   }, [getInstance, onFrameClick])
 
   function renderChart() {
+    const voiceSegments = showRegister ? registerSegments(frames) : []
     const seriesData = Object.fromEntries(KEYS.map(key => [
       key, visible[key] ? frames.map(frame => [frame.time, validFrequency(frame[key])]) : [],
     ])) as Record<typeof KEYS[number], Array<[number, number | null]>>
@@ -89,6 +93,10 @@ export function FormantChart({ cursorTime = -1, onFrameClick }: FormantChartProp
               <span style="margin-left:auto;font-variant-numeric:tabular-nums;font-weight:600;">${formatFrequencyPreview(value)}</span>
             </div>`
           }
+          if (showRegister && typeof time === 'number') {
+            const segment = voiceSegments.find(item => time >= item.start && time <= item.end)
+            html += `<div style="color:#667085;margin-top:4px;">声区估计：${segment ? VOICE_REGISTER_LABELS[segment.register] : '暂无'}</div>`
+          }
           return html
         },
       },
@@ -96,6 +104,13 @@ export function FormantChart({ cursorTime = -1, onFrameClick }: FormantChartProp
       yAxis: frequencyAxis(scale, FORMANT_CHART_RANGE.max, isPortrait, frequencies),
       color: KEYS.map(key => FREQUENCY_COLORS[key]),
       series: [
+        {
+          name: '__register', type: 'line', data: [], silent: true, z: 0,
+          markArea: { silent: true, label: { show: false }, data: voiceSegments.map(segment => [
+            { name: VOICE_REGISTER_LABELS[segment.register], xAxis: segment.start, itemStyle: { color: REGISTER_COLORS[segment.register], opacity: 0.13 } },
+            { xAxis: segment.end },
+          ]) },
+        },
         ...KEYS.map(key => {
           const color = FREQUENCY_COLORS[key]
           const range = bands[key].range

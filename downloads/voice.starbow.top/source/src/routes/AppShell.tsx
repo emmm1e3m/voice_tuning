@@ -38,7 +38,7 @@ export interface ShellContext {
 export function AppShell() {
   const [configOpen, setConfigOpen] = useState(false)
   const [helpOpen, setHelpOpen] = useState(false)
-  const [helpTopic, setHelpTopic] = useState<HelpTopic>('quick-start')
+  const [helpTopic, setHelpTopic] = useState<HelpTopic>('foreword')
   const [aboutOpen, setAboutOpen] = useState(false)
   const [goalOpen, setGoalOpen] = useState(false)
   const pianoScrollProgressRef = useRef(0)
@@ -63,7 +63,7 @@ export function AppShell() {
     setAboutOpen(overlay === 'about')
     setGoalOpen(overlay === 'goal')
   }
-  const openHelp = (topic: HelpTopic = 'quick-start') => {
+  const openHelp = (topic: HelpTopic = 'foreword') => {
     const page = getAnalyticsPage()
     if (!helpOpen && page) track('help_open', { page, topic })
     setHelpTopic(topic)

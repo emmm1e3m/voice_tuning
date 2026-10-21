@@ -18,7 +18,6 @@ describe.each([['portrait', TrainingGoalCard], ['desktop', TargetPresetBar]] as 
     const previous = useAppStore.getState().presetOverrides
     const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false)
     render(<Component />)
-    if (_name === 'desktop') fireEvent.click(screen.getByText('本次练习 · 目标中心'))
     fireEvent.click(screen.getByLabelText('重置所有预设'))
     expect(useAppStore.getState().presetOverrides).toEqual(previous)
     expect(useAppStore.getState().activePreset).toBe('vowel-o')
@@ -35,7 +34,6 @@ describe.each([['portrait', TrainingGoalCard], ['desktop', TargetPresetBar]] as 
     ['f2', '100', 1150], ['f2', '4000', 3350],
   ] as const)('clamps %s center %s identically and keeps all fixed widths', (key, entered, expected) => {
     render(<Component />)
-    if (_name === 'desktop') fireEvent.click(screen.getByText('本次练习 · 目标中心'))
     const input = screen.getByLabelText(`${key.toUpperCase()}目标中心`) as HTMLInputElement
     const before = useAppStore.getState().bands
     fireEvent.change(input, { target: { value: entered } })
@@ -52,7 +50,6 @@ describe.each([['portrait', TrainingGoalCard], ['desktop', TargetPresetBar]] as 
   })
   it('moves the center with keyboard arrows and retains its override across vowel switches', () => {
     render(<Component />)
-    if (_name === 'desktop') fireEvent.click(screen.getByText('本次练习 · 目标中心'))
     fireEvent.keyDown(screen.getByLabelText('F1中心滑杆'), { key: 'ArrowLeft' })
     expect(useAppStore.getState().bands.f1.range).toEqual([790, 990])
     fireEvent.click(screen.getByRole('button', { name: 'i' }))
