@@ -1,0 +1,69 @@
+import { useAppStore } from '../../store/appStore'
+import { getFormantStatus } from '../../feedback/status'
+import type { FormantStatus } from '../../feedback/status'
+import type { FormantSeries } from '../../types'
+import styles from './FeedbackHero.module.css'
+import { Tip } from '../Tip'
+import { VOICE_REGISTER_LABELS } from '../../feedback/register'
+
+const KEYS: FormantSeries[] = ['f0', 'f1', 'f2']
+
+const VAL_COLORS: Record<FormantSeries, string> = {
+  f0: 'var(--v2-f0)',
+  f1: 'var(--v2-f1)',
+  f2: 'var(--v2-f2)',
+}
+
+const STATUS_LABELS: Record<FormantStatus, string> = {
+  high: '高于目标范围',
+  low: '低于目标范围',
+  hit: '目标范围内',
+  none: '暂无有效数据',
+}
+
+export function statusGlyph(status: FormantStatus): '↑' | '↓' | '✓' | '' {
+  if (status === 'hit') return '✓'
+  if (status === 'low') return '↓'
+  if (status === 'high') return '↑'
+  return ''
+}
+
+export function FeedbackHero() {
+  const latestFrame = useAppStore(s => s.latestFrame)
+  const bands = useAppStore(s => s.bands)
+  const register = latestFrame?.register ?? 'unvoiced'
+
+  return (
+    <section className={styles.card} aria-label="实时反馈">
+      <div className={styles.header}><span className={styles.title}>实时反馈</span><span className={styles.register}>声区 <Tip align="end" ariaLabel="声区说明" content="根据泛音丰富度估计声区：第 2–10 个泛音中落在基频 20 dB 内的数量，经 5 帧中值平滑后，≥5 标为真声，≤2 标为假声，中间标为混声。" /><b>{VOICE_REGISTER_LABELS[register]}</b></span></div>
+      <div className={styles.readings}>
+      {KEYS.map(key => {
+        const value = latestFrame?.[key]
+        const valid = value != null && Number.isFinite(value) && value > 0
+        const status = valid ? getFormantStatus(value, bands[key].range) : 'none'
+        const text = valid ? String(Math.round(value)) : '--'
+        return (
+        <span
+          key={key}
+          className={styles.value}
+          role="group"
+          aria-label={status === 'none'
+            ? `${key.toUpperCase()} ${STATUS_LABELS.none}`
+            : `${key.toUpperCase()} ${text} Hz，${STATUS_LABELS[status]}`}
+          data-status={status}
+          data-testid={`hero-col-${key}`}
+          style={{ color: VAL_COLORS[key] }}
+        >
+          <span className={styles.valueKey}>{key.toUpperCase()}</span>
+          <span className={styles.number} data-testid={key === 'f0' ? 'hero-f0' : undefined}>
+            {text}
+          </span>
+          {valid && <span className={styles.unit}>Hz</span>}
+          <span className={styles.direction} aria-hidden="true">{statusGlyph(status)}</span>
+        </span>
+        )
+      })}
+      </div>
+    </section>
+  )
+}

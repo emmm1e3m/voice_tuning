@@ -1,0 +1,14 @@
+.card { border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; background: #fff; box-shadow: var(--shadow-card); }
+.header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.title { font-size: calc(12px * var(--font-scale)); font-weight: 650; color: var(--text); }
+.register { display: inline-flex; align-items: center; gap: 4px; font-size: calc(11px * var(--font-scale)); color: var(--text-soft); }
+.register b { margin-left: 4px; font-weight: 600; color: var(--text); }
+.readings { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 10px; }
+.value { display: flex; flex-wrap: wrap; align-items: baseline; gap: 3px; font-variant-numeric: tabular-nums; }
+.valueKey { font: 600 calc(11px * var(--font-scale)) var(--font-mono); }
+.number { font-size: calc(16px * var(--font-scale)); font-weight: 650; }
+.unit { font-size: calc(9px * var(--font-scale)); }
+.direction { font-size: calc(11px * var(--font-scale)); }
+.value[data-status="none"] .number { color: var(--text-mute); }
+.value[data-status="hit"] .direction { color: var(--hit); }
+.value[data-status="low"] .direction, .value[data-status="high"] .direction { color: var(--warn); }

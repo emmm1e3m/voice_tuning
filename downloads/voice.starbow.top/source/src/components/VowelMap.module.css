@@ -1,0 +1,16 @@
+.lab { margin: 20px 0; border: 1px solid var(--border, #e4e1ec); border-radius: var(--radius, 20px); background: #fff; overflow: hidden; color: #53596c; }
+.presets { display: flex; gap: 8px; flex-wrap: wrap; padding: 16px 18px 0; }.presets button { min-width: 54px; min-height: 42px; display: flex; gap: 7px; align-items: baseline; justify-content: center; font: inherit; font-size: calc(14px * var(--font-scale)); color: #685f78; border: 1px solid #e2dce9; border-radius: var(--radius-sm, 10px); padding: 7px 10px; background: #fff; cursor: pointer; }.presets small { font-size: calc(10px * var(--font-scale)); }.presets button[aria-pressed=true] { background: #f3edf8; border-color: #c8b3df; color: #7953a6; }.presets button:last-child { font-size: calc(11px * var(--font-scale)); }.presets button:focus-visible { outline: 2px solid #8b67c5; outline-offset: 2px; }
+.action { padding: 0 18px; margin: 12px 0; font-size: calc(12px * var(--font-scale)); line-height: 1.8; }
+.plot { padding: 5px 8px 0; }.plot svg { display: block; width: 100%; height: auto; }.plot text { fill: #6c7282; font: calc(11px * var(--font-scale)) var(--font-sans, sans-serif); }.background { fill: #fcfafc; stroke: #e3dce9; }.grid { stroke: #ebe7ef; }.reference circle { fill: #f1eef5; stroke: #c8c2d2; }.reference text { font-weight: 650; }.plot .f1Text { fill: #bf567d; }.plot .f2Text { fill: #447eb0; }.crosshair { fill: none; stroke: #b7a0d0; stroke-dasharray: 4 4; }.point { fill: #8b67c5; stroke: #fff; stroke-width: 3; cursor: grab; touch-action: none; }.point:active { cursor: grabbing; }.point:focus { outline: none; stroke: #4e2d78; stroke-width: 4; }.plot .pointText { fill: #fff; font-weight: 700; pointer-events: none; }
+.adjustments { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; padding: 0 18px 16px; }.adjustments label { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 5px; font-size: calc(12px * var(--font-scale)); font-weight: 600; }.adjustments output { font-weight: 400; font-variant-numeric: tabular-nums; }.adjustments input { width: 100%; height: 26px; margin: 0; cursor: pointer; accent-color: #d76e97; }.adjustments label:last-child input { accent-color: #5c92c7; }
+.caption { margin: 0; padding: 14px 18px; font-size: calc(12px * var(--font-scale)); line-height: 1.8; border-top: 1px solid #eeeaf2; }
+@media(max-width:600px) { .presets { gap: 6px; padding: 14px 12px 0; }.presets button { min-width: 48px; padding: 6px 8px; }.adjustments { grid-template-columns: 1fr; gap: 10px; padding: 0 12px 14px; }.action, .caption { padding-left: 12px; padding-right: 12px; } }
+.compactLabel { display: none; }
+.scrollHint { display: none; }
+/* 固定画布内滚动，保留坐标与元音字母的实际字号。 */
+@media(max-width:600px) {
+  .plot { min-width: 0; max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; }
+  .plot svg { width: 640px; min-width: 640px; }
+  .scrollHint { display: block; padding: 0 12px; margin: 0 0 10px; color: #737084; font-size: calc(11px * var(--font-scale)); }
+}
+.plot:focus-visible { outline: 2px solid #8b67c5; outline-offset: -2px; }

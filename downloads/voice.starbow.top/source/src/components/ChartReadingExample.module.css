@@ -1,0 +1,20 @@
+.example { margin: 20px 0 26px; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: #fff; }
+.header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 14px 17px 8px; }
+.header strong { color: var(--text); font-size: calc(13px * var(--font-scale)); }
+.header > span { color: var(--text-mute); font-size: calc(10px * var(--font-scale)); }
+.legend { display: flex; flex-wrap: wrap; gap: 7px; padding: 5px 17px 10px; }
+.legend button { display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: #fafafe; color: var(--text-soft); cursor: pointer; font: inherit; font-size: calc(10px * var(--font-scale)); }
+.legend button[aria-pressed='false'] { opacity: .5; }
+.legend button[aria-pressed='false'] strong { text-decoration: line-through; }
+.legend i { width: 8px; height: 8px; border-radius: 50%; }
+.legend button:focus-visible, .plot:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
+.plot { overflow-x: auto; padding: 0 8px; overscroll-behavior-x: contain; }
+.plot svg { display: block; width: 100%; min-width: 560px; height: auto; }
+.plot text { font: calc(11px * var(--font-scale)) var(--font-sans, sans-serif); }
+.plot .tick { fill: #747a89; }
+.plot .axisTitle { fill: #666b7a; }
+.plot .targetLabel { font-size: calc(10px * var(--font-scale)); font-weight: 600; }
+.grid { stroke: #e9eaf0; stroke-width: 1; }
+.axis { fill: none; stroke: #b7bfcb; stroke-width: 1.2; }
+.example figcaption { padding: 12px 17px; border-top: 1px solid var(--border); color: var(--text-soft); font-size: calc(11px * var(--font-scale)); line-height: 1.9; background: #fcfcfe; }
+@media (max-width: 480px) { .header { padding: 12px; } .legend { padding-left: 12px; padding-right: 12px; gap: 6px; } .legend button { padding: 6px 8px; } .legend button span { display: none; } .example figcaption { padding: 11px 12px; } }

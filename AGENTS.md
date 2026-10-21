@@ -1,23 +1,9 @@
-# AGENTS.md
+# 本仓库工作说明
 
-## 分支命名规范
-
-格式：`<type>/<kebab-case>`
-
-- `type` 仅限：`feat`、`fix`、`refactor`、`docs`、`ci`、`chore`
-- 全小写 kebab-case，无大写、无下划线、无 `type/type-` 类重复前缀
-- 示例：`feat/practice-page`、`fix/piano-active-note-label`
-
-## Worktree 管理规范
-
-- 目录一律 `.worktrees/<分支名原样保留斜杠>`，例：分支 `fix/piano-label` → `.worktrees/fix/piano-label`
-- `.worktrees/` 已在 `.gitignore` 中忽略，禁止追踪其内容
-- 主 checkout 常驻 `master` 并保持干净；功能开发一律在 worktree + 对应分支内进行
-- 一个分支对应一个 worktree；合并后执行 `git worktree remove` + `git branch -d` 清理
-
-## PR 规范
-
-- base 一律 `master`；一分支一 PR；标题 Conventional Commits 且 type 与分支一致，如分支 `fix/piano-label` → `fix(piano): xxx`
-- 合并方式一律 Squash（历史 `#30-#39` 一致；`release.yml` 靠 master 的 squash 标题判断 feat→minor / fix→patch）
-- 合并前必须 `npm test` + `npm run build` + `npx tsc --noEmit` 全过；`[skip ci]` 仅允许自动版本提交使用
-- 合并后删除分支并 `git worktree remove` 清理 worktree（仓库已开 deleteBranchOnMerge）
+- GitHub 仓库：https://github.com/emmm1e3m/voice_tuning
+- Pages：https://emmm1e3m.github.io/voice_tuning/
+- 本目录是独立 Git 仓库。先运行 git status、git remote -v，确认 origin 后再提交与推送。
+- Git 认证由本仓库显式配置的 Windows Git Credential Manager 提供，凭据保存在系统凭据库；不要把令牌写入文件、URL 或提交。git ls-remote origin 可验证读取，git push --dry-run origin main 可验证写入。
+- 推送 main 后根 .github/workflows/pages.yml 自动测试并发布嵌套源码的 dist。
+- 所有文本使用 UTF-8，代码注释使用中文。不新建无关项目目录。
+- 源码位于 downloads/voice.starbow.top/source。使用 HashRouter；Pages 构建必须传 --base=/voice_tuning/。upstream 仅用于查询原项目，禁止推送。此应用不要添加到个人主页。

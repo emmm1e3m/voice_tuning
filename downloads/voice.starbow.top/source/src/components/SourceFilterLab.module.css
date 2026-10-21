@@ -1,0 +1,19 @@
+.lab { border: 1px solid var(--border, #e4e1ec); border-radius: var(--radius, 20px); margin: 20px 0; overflow: hidden; background: #fff; color: #4f5669; }
+.flow { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 18px; background: #faf7fb; font-size: calc(11px * var(--font-scale)); }
+.flow span { display: grid; gap: 4px; }.flow b { color: #343b4a; font-size: calc(13px * var(--font-scale)); }.flow strong { color: #ac9bb8; }
+.controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; padding: 18px; }
+.controls label { display: flex; flex-wrap: wrap; gap: 7px; align-items: baseline; font-size: calc(11px * var(--font-scale)); font-weight: 600; }
+.controls output { font-weight: 400; font-variant-numeric: tabular-nums; }.controls input { width: 100%; height: 24px; margin: 0; accent-color: #8b67c5; cursor: pointer; }.controls label:nth-child(2) input { accent-color: #d76e97; }.controls label:nth-child(3) input { accent-color: #5c92c7; }
+.presets { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 0 18px 12px; font-size: calc(11px * var(--font-scale)); }
+.presets button { border: 1px solid #e0dce8; border-radius: var(--radius-sm, 10px); background: #fff; color: #5a526a; padding: 7px 10px; min-height: 36px; font: inherit; cursor: pointer; }.presets button:focus-visible { outline: 2px solid #8b67c5; outline-offset: 2px; }
+.plot { padding: 0 10px; }.plot svg { display: block; width: 100%; height: auto; }.plot text { fill: #677084; font: calc(11px * var(--font-scale)) var(--font-sans, sans-serif); }.plot .sourceLabel { fill: #8b67c5; }.grid { stroke: #ececf1; }.axis { stroke: #bfc6d0; }.source { stroke: #8b67c5; stroke-width: 2; }.output { stroke: #767183; stroke-width: 2; }.envelope { stroke: #9d92b0; stroke-width: 2; fill: none; }.f1 { stroke: #d76e97; stroke-dasharray: 4 4; }.f2 { stroke: #5c92c7; stroke-dasharray: 4 4; }.plot .f1Text { fill: #c85382; font-weight: 700; }.plot .f2Text { fill: #407caf; font-weight: 700; }
+.explanation { margin: 0; padding: 14px 18px; border-top: 1px solid #eeeaf2; font-size: calc(12px * var(--font-scale)); line-height: 1.8; }
+@media(max-width:600px) { .controls { grid-template-columns: 1fr; gap: 11px; }.controls label { justify-content: space-between; }.flow { padding: 14px 12px; font-size: calc(10px * var(--font-scale)); gap: 5px; }.flow b { font-size: calc(12px * var(--font-scale)); }.explanation { padding: 12px; } }
+.scrollHint { display: none; }
+/* 固定画布内滚动，避免窄屏将图中标签压缩至不可读。 */
+@media(max-width:600px) {
+  .plot { min-width: 0; max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; }
+  .plot svg { width: 660px; min-width: 660px; }
+  .scrollHint { display: block; padding: 0 12px; margin: 0 0 10px; color: #737084; font-size: calc(11px * var(--font-scale)); }
+}
+.plot:focus-visible { outline: 2px solid #8b67c5; outline-offset: -2px; }

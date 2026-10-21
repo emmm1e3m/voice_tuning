@@ -1,0 +1,6 @@
+.section { padding: 8px 0 22px; }
+.section + .section { border-top: 1px solid var(--border); padding-top: 22px; }
+.section h4 { font-size: calc(17px * var(--font-scale)); margin: 0 0 12px; color: var(--text); }
+.section p { margin: 8px 0; line-height: 1.85; color: var(--text-soft); }
+.link { color: var(--primary); text-decoration: none; overflow-wrap: anywhere; }
+.link:hover { text-decoration: underline; }

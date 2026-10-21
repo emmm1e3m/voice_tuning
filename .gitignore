@@ -1,6 +1,20 @@
-.worktrees/
-.superpowers/
-dist/
-node_modules/
-.env.local
-.env.*.local
+# 只上传整合源码、根文档与启动脚本；下载快照和原始 ZIP 留在本机。
+/downloads.zip
+/downloads/*
+!/downloads/voice.starbow.top/
+/downloads/voice.starbow.top/*
+!/downloads/voice.starbow.top/source/
+**/node_modules/
+**/dist/
+**/.validation/
+**/.opencode/
+**/.superpowers/
+**/.worktrees/
+**/.env
+**/.env.*
+!**/.env.example
+**/test-results.json
+**/test-run.log
+**/*.tsbuildinfo
+.idea/
+.vscode/

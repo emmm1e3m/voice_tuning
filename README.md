@@ -1,46 +1,39 @@
+# 声音练习室
 
-# Voice Builder
+将 Voice Builder 实时练习器与 MTF 声音女性化手册整合为本地应用。采用浅粉、浅蓝与暖白主题，界面和图表字号统一放大至原来的 125%，操作图标使用统一的粗线风格。
 
-实时分析语音音高, 共振峰, 专为伪音练习设计.
+## 一键启动
 
-<img alt="Logo" src="assets/logo-with-text.png" width="60%">
+双击当前目录的 **`启动练习器.cmd`**。
 
-## Quick Start
+- 首次启动在项目内安装依赖，后续依赖清单不变时直接启动。
+- 自动选择 5173–5192 中的可用端口，页面就绪后打开浏览器；已有本项目服务时复用。
+- 保留启动窗口，按 Ctrl+C 停止服务。启动需要系统已安装 Node.js。
 
-克隆本仓库
-```bash
-  git clone https://github.com/JPs-git/voice-builder.git
-  cd voice-builder
-```
-安装依赖启动开发服务器
-```bash
-  npm install
-  npm run dev
-```
+实际应用源码在 `downloads/voice.starbow.top/source/`。下载目录外层的 HTML/JS 是原站快照，日常使用走一键启动入口。启动脚本说明见 [scripts/启动说明.md](scripts/启动说明.md)。
 
-## Features
+## 开始练习
 
-- 实时显示音高、共振峰
-- 回放自己的声音
-- 支持上传wav文件分析
+1. 顶部始终提供「声音分析」「音高参考」两个页面标签。声音分析页上方的 F0、F1、F2 三卡显示保留窗口的频率中位数与目标中心；点击卡片可阅读对应原理和训练方法。
+2. 桌面展开「本次练习 · 目标中心」，手机打开底部目标按钮。选择元音后，每个 F 只需调整一个中心，参考窗口固定为 F0 ±40 Hz、F1 ±100 Hz、F2 ±150 Hz。
+3. 开始录音或导入音频。在同一张图里观察 F0、F1、F2：紫、粉、蓝分别对应三项频率。默认使用对数坐标，可切换线性；图例只控制曲线显示。
+4. 实时反馈持续显示当前声区与最新 F0、F1、F2 数值。上方三卡用于查看整个保留窗口的概况，回放用于核对听感。
+5. 用「下载 WAV」保存保留窗口内的音频。默认保留 20 秒；在「配置」中可设为 5–120 秒，导入时长上限同步变化。平滑窗口默认 5 帧，可设为 1–30 帧。
 
+录音在浏览器内处理，音频不会自动保存到磁盘。缩短保留时长时会丢弃较早的音频；刷新、清空或开始新音频前，先下载需要保留的片段。
 
-## 匿名使用统计
+手机底部提供录音、目标、清空和回放；导入、下载、配置与关于在右上角「更多」。音高参考页可点击钢琴或用 Enter / 空格听参考音。
 
-自行部署默认关闭统计。正式站点可按 [统计接入说明](docs/analytics.md) 配置 Umami Cloud。录音和声音分析数据在本地处理，不发送给统计服务。
+## 学习与文档
 
-## Skills
-- Javascript
-- HTML
-- CSS
-- Echarts
+帮助面板以手册正文和插图为基础，扩充发声部位、声源与滤波器、元音与共振峰的讲解。包含 16 道复习题，答案默认收起；另有发声部位、声源与滤波器、元音空间三幅交互图，以及 F0/F1/F2 读图示例。
 
-## Screenshots
-<img alt="Logo" src="assets/screen_shot.png" width="80%">
-<img alt="Logo" src="assets/screen_shot_2.png" width="80%">
+- [整合版源码与说明](downloads/voice.starbow.top/source/README.md)
+- [界面和交互说明](downloads/voice.starbow.top/source/docs/integration-notes.md)
+- [时间坐标与回放](downloads/voice.starbow.top/source/docs/coordinate-system.md)
+- [当前进展与验证](docs/user_notes.md)
+- [MTF 手册原文](downloads/mtf-voice-training.vercel.app/index.html)
 
-## License
+来源：[在线声音训练](https://voice.starbow.top/) 与 [MTF 声音女性化练习手册](https://mtf-voice-training.vercel.app/)。应用「关于」也提供这两个入口。
 
-[MIT](https://choosealicense.com/licenses/mit/)
-
-
+`downloads.zip` 为原始备份，后续整合在现有源码中进行。

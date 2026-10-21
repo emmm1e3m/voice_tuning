@@ -1,0 +1,96 @@
+import { useAppStore } from '../store/appStore'
+import { useFeedback } from '../feedback'
+import { getFormantStatus } from '../feedback/status'
+import { VOICE_REGISTER_LABELS } from '../feedback/register'
+import type { FormantStatus } from '../feedback/status'
+import type { VoiceRegister } from '../types'
+import { Tip } from './Tip'
+import styles from './FeedbackCard.module.css'
+import type { HelpTopic } from '../content/helpContent'
+
+const KEYS = ['f0', 'f1', 'f2'] as const
+
+const REGISTER_TIP =
+  '声区基于泛音丰富度判断，而非音高：统计基频第 2–10 个泛音中落在基频 20dB 内的数量，经 5 帧中值平滑后，≥5 判为真声，≤2 判为假声，中间为混声。阈值按 /a/ 元音标定，跨元音可能偏差，混声边缘的瞬时变薄可能短暂误判为假声。'
+
+const REGISTER_CLASS: Record<VoiceRegister, string> = {
+  chest: styles.registerChest,
+  mixed: styles.registerMixed,
+  falsetto: styles.registerFalsetto,
+  unvoiced: styles.registerNone,
+}
+
+const STATUS_CLASS: Record<FormantStatus, string> = {
+  hit: styles.valueHit,
+  low: styles.valueWarn,
+  high: styles.valueWarn,
+  none: styles.valueMute,
+}
+
+function formatValue(value: number | null | undefined): string {
+  if (value == null || !Number.isFinite(value)) return '--'
+  return `${Math.round(value)} Hz`
+}
+
+function formatRegister(frame: ReturnType<typeof useAppStore.getState>['latestFrame']): VoiceRegister {
+  if (!frame?.register || frame.register === 'unvoiced') return 'unvoiced'
+  return frame.register
+}
+
+export function FeedbackCard({ onOpenHelp }: { onOpenHelp?: (topic: HelpTopic) => void } = {}) {
+  const latestFrame = useAppStore(s => s.latestFrame)
+  const bands = useAppStore(s => s.bands)
+  const results = useFeedback()
+  const register = formatRegister(latestFrame)
+
+  return (
+    <aside className={styles.card} aria-label="实时反馈">
+      <div className={styles.header}>实时反馈</div>
+      <div className={styles.values}>
+        <div className={styles.valueRow}>
+          <span className={styles.registerLabel}>
+            <span className={styles.valueLabel}>声区</span>
+            <Tip content={REGISTER_TIP} ariaLabel="声区说明" />
+          </span>
+          <span className={`${styles.valueNum} ${REGISTER_CLASS[register]}`}>
+            {VOICE_REGISTER_LABELS[register]}
+          </span>
+        </div>
+        {KEYS.map(key => {
+          const status = getFormantStatus(latestFrame?.[key], bands[key].range)
+          return (
+            <div key={key} className={styles.valueRow} data-status={status}>
+              {onOpenHelp ? <button type="button" className={styles.metricHelp} onClick={() => onOpenHelp(key)} style={{ color: `var(--c-${key})` }} aria-label={`${key.toUpperCase()} 数值原理与训练方法`}>{key.toUpperCase()} <span>↗</span></button> : <span className={styles.valueLabel}>{key.toUpperCase()}</span>}
+              <span className={`${styles.valueNum} ${STATUS_CLASS[status]}`} style={{ color: status === 'none' ? undefined : `var(--c-${key})` }}>
+                {formatValue(latestFrame?.[key])}
+              </span>
+            </div>
+          )
+        })}
+      </div>
+      <ul className={styles.list}>
+        {results.length === 0 ? (
+          <li className={styles.row} data-status="idle">
+            <span className={styles.label}>目标区间</span>
+            <span className={styles.value}>—</span>
+          </li>
+        ) : (
+          results.map(result => (
+            <li
+              key={result.id}
+              className={styles.row}
+              data-status={result.status}
+            >
+              <span className={styles.label}>{result.label}</span>
+              <span
+                className={`${styles.value} ${result.status === 'hit' ? styles.valueHit : ''}`}
+              >
+                {result.message}
+              </span>
+            </li>
+          ))
+        )}
+      </ul>
+    </aside>
+  )
+}

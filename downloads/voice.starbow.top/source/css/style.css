@@ -1,0 +1,62 @@
+/* 统一的粉蓝主题与频率配色，桌面和手机共用。 */
+:root {
+  --font-scale: 1.25;
+  color-scheme: light;
+  --bg: #f7fbff;
+  --bg-pink: #fff8fb;
+  --bg-warm: #fffdf7;
+  --panel: rgba(255,255,255,.86);
+  --border: rgba(117,140,167,.2);
+  --border-strong: #c8d6e7;
+  --text: #24303a;
+  --text-soft: #5f6b7a;
+  --text-mute: #7c8999;
+  --primary: #5f8fdc;
+  --primary-hover: #497bc9;
+  --primary-soft: #ebf2fc;
+  --accent-pink: #d86f9b;
+  --hit: #338471;
+  --hit-soft: #e9f5ef;
+  --warn: #a8782d;
+  --warn-soft: #fff5e6;
+  --info: #5c92c7;
+  --info-soft: #edf5fd;
+  --shadow-card: 0 5px 24px rgba(76,98,130,.04);
+  --shadow-hover: 0 10px 30px rgba(76,98,130,.1);
+  --radius: 20px;
+  --radius-sm: 10px;
+  --c-f0: #8b67c5;
+  --c-f1: #d76e97;
+  --c-f2: #5c92c7;
+  --font-sans: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-mono: "Cascadia Code", Consolas, monospace;
+  --color-text-secondary: var(--text-soft);
+  --color-text-tertiary: var(--text-mute);
+  --color-border-default: var(--border);
+  --v2-page: var(--bg);
+  --v2-text: var(--text);
+  --v2-secondary: var(--text-soft);
+  --v2-border: var(--border);
+  --v2-brand: var(--primary);
+  --v2-brand-soft: var(--primary-soft);
+  --v2-f0: var(--c-f0);
+  --v2-f1: var(--c-f1);
+  --v2-f2: var(--c-f2);
+  --v2-entry-bg: #f5f8fd;
+  --v2-ring: #e5eefb;
+  --m-pill-border: var(--border);
+  --m-text: var(--text);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { font: calc(14px * var(--font-scale))/1.6 var(--font-sans); color: var(--text); background: linear-gradient(135deg,var(--bg-pink),var(--bg) 50%,var(--bg-warm)); background-attachment: fixed; -webkit-font-smoothing: antialiased; }
+button, input, select { font: inherit; }
+button { -webkit-tap-highlight-color: transparent; }
+button, a, input { touch-action: manipulation; }
+:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+::selection { background: #dce9fc; }
+#app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; }
+#f0Chart, #formantChart, #pitchChart { position: absolute; inset: 0; display: block; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
