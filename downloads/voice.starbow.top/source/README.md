@@ -79,8 +79,8 @@ npm run build -- --base=/voice_tuning/
 
 `docs/superpowers/`、旧性能实验与设计稿保留为历史资料；当前行为见本说明及对应源码。
 
-## 来源与许可
+## 来源与致谢
 
 [Voice Builder 在线声音训练](https://voice.starbow.top/) · [MTF 声音女性化练习手册](https://mtf-voice-training.vercel.app/)
 
-上游源码 README 标注 MIT，原下载版本没有独立 LICENSE 文件。原有声明保留；手册离线副本保留原署名，其页面未标明开源许可。
+感谢原作者提供的代码与文档；手册离线副本保留原署名。
