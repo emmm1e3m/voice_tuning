@@ -55,11 +55,11 @@ describe('first-use help integration', () => {
     resizeLayout(portrait)
     fireEvent.click(screen.getByRole('button', { name: '查看说明' }))
     expect(track).toHaveBeenLastCalledWith('help_open', { page: 'analysis', topic: 'quick-start' })
-    if (portrait) fireEvent.change(screen.getByRole('combobox', { name: '选择教程章节' }), { target: { value: 'charts' } })
+    if (portrait) fireEvent.change(screen.getByRole('combobox', { name: '选择帮助主题' }), { target: { value: 'charts' } })
     else fireEvent.click(screen.getByRole('button', { name: '读图与反馈' }))
     expect(track).toHaveBeenCalledTimes(1)
     fireEvent.click(screen.getByRole('button', { name: '关闭' }))
-    fireEvent.click(screen.getByRole('button', { name: 'F0 音高：原理与训练方法' }))
+    fireEvent.click(screen.getByRole('button', { name: 'F0 音高：使用说明' }))
     expect(track).toHaveBeenLastCalledWith('help_open', { page: 'analysis', topic: 'f0' })
     fireEvent.click(screen.getByRole('button', { name: '关闭' }))
     if (portrait) {
@@ -67,7 +67,7 @@ describe('first-use help integration', () => {
       fireEvent.click(screen.getByRole('menuitem', { name: '帮助' }))
     } else fireEvent.click(screen.getByRole('button', { name: /帮助/ }))
     expect(track).toHaveBeenCalledTimes(3)
-    expect(track).toHaveBeenLastCalledWith('help_open', { page: 'analysis', topic: 'foreword' })
+    expect(track).toHaveBeenLastCalledWith('help_open', { page: 'analysis', topic: 'quick-start' })
   })
   it.each([true, false])('uses contextual controls and one first-use banner on both pages (portrait=%s)', portrait => {
     render(<TestApp />)
@@ -87,16 +87,16 @@ describe('first-use help integration', () => {
   it.each([true, false])('restores current-layout focus after help crosses the breakpoint (starts portrait=%s)', portrait => {
     render(<TestApp />)
     resizeLayout(portrait)
-    const original = screen.getByRole('button', { name: 'F0 音高：原理与训练方法' })
+    const original = screen.getByRole('button', { name: 'F0 音高：使用说明' })
     original.focus(); fireEvent.click(original)
     const topic = portrait
-      ? screen.getByRole('combobox', { name: '选择教程章节' })
+      ? screen.getByRole('combobox', { name: '选择帮助主题' })
       : screen.getByRole('button', { name: 'F0 · 音高' })
     topic.focus()
     resizeLayout(!portrait)
     const currentTopic = portrait
       ? screen.getByRole('button', { name: 'F0 · 音高' })
-      : screen.getByRole('combobox', { name: '选择教程章节' })
+      : screen.getByRole('combobox', { name: '选择帮助主题' })
     expect(document.activeElement).toBe(currentTopic)
     if (portrait) expect(currentTopic.getAttribute('aria-pressed')).toBe('true')
     else expect((currentTopic as HTMLSelectElement).value).toBe('f0')
@@ -108,7 +108,7 @@ describe('first-use help integration', () => {
   it.each([true, false])('uses help or More if current recording button is disabled (starts portrait=%s)', portrait => {
     const view = render(<TestApp />)
     resizeLayout(portrait)
-    const original = screen.getByRole('button', { name: 'F0 音高：原理与训练方法' })
+    const original = screen.getByRole('button', { name: 'F0 音高：使用说明' })
     original.focus(); fireEvent.click(original)
     state.requesting = true
     view.rerender(<TestApp />)
@@ -123,7 +123,7 @@ describe('first-use help integration', () => {
   it('clears the unmounted portrait goal overlay when switching to landscape', () => {
     render(<TestApp />)
     fireEvent.click(screen.getByRole('button', { name: '回到训练目标' }))
-    expect(screen.getByRole('dialog', { name: '训练目标' })).toBeTruthy()
+    expect(screen.getByRole('dialog', { name: '目标频率设置' })).toBeTruthy()
     resizeLayout(false)
     expect(screen.queryByRole('dialog')).toBeNull()
     expect(screen.getByRole('region', { name: '首次使用帮助' })).toBeTruthy()
@@ -150,7 +150,7 @@ describe('first-use help integration', () => {
     trigger.focus()
     fireEvent.click(trigger)
     expect(screen.getByRole('dialog', { name: '使用说明' })).toBeTruthy()
-    expect((screen.getByRole('combobox', { name: '选择教程章节' }) as HTMLSelectElement).value).toBe('quick-start')
+    expect((screen.getByRole('combobox', { name: '选择帮助主题' }) as HTMLSelectElement).value).toBe('quick-start')
     expect(trigger.isConnected).toBe(true)
     expect(screen.queryByRole('region', { name: '首次使用帮助' })).toBeNull()
     fireEvent.click(screen.getByRole('button', { name: '关闭' }))

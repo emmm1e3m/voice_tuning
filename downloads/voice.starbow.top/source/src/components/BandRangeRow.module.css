@@ -1,10 +1,10 @@
 .control { min-width: 0; }
 .row { display: flex; align-items: center; gap: 8px; }
-.caption { color: var(--text-soft, #64748b); font-size: calc(12px * var(--font-scale)); flex: 0 0 auto; }
+.caption { color: var(--text-soft, #64748b); font-size: var(--text-sm); flex: 0 0 auto; }
 .inputBox { display: flex; align-items: center; gap: 4px; padding: 0 8px; flex: 1; min-width: 0; border: 1px solid var(--border, #dce4ef); border-radius: var(--radius-sm); background: #fff; }
-.inputBox input { width: 100%; min-width: 0; border: 0; min-height: 34px; padding: 4px 0; background: transparent; color: var(--text, #172b49); font: 600 calc(14px * var(--font-scale)) var(--font-mono, monospace); outline: none; }
-.inputBox > span { color: var(--text-soft, #64748b); font-size: calc(11px * var(--font-scale)); }
+.inputBox input { width: 100%; min-width: 0; border: 0; min-height: 34px; padding: 4px 0; background: transparent; color: var(--text, #172b49); font: 600 var(--text-md) var(--font-mono, monospace); outline: none; }
+.inputBox > span { color: var(--text-soft, #64748b); font-size: var(--text-sm); }
 .inputBox:focus-within { border-color: var(--band-color, var(--primary)); box-shadow: 0 0 0 2px color-mix(in srgb, var(--band-color, var(--primary)) 14%, transparent); }
 .warning { border-color: #f59e0b; }
-.width { flex: 0 0 auto; white-space: nowrap; color: var(--text-soft, #64748b); font-size: calc(11px * var(--font-scale)); font-variant-numeric: tabular-nums; }
-@media (max-width: 768px) { .inputBox input { min-height: 40px; font-size: calc(16px * var(--font-scale)); } }
+.width { flex: 0 0 auto; white-space: nowrap; color: var(--text-soft, #64748b); font-size: var(--text-sm); font-variant-numeric: tabular-nums; }
+@media (max-width: 768px) { .inputBox input { min-height: 40px; font-size: var(--text-lg); } }

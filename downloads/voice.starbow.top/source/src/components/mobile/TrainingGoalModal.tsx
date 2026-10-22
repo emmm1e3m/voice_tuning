@@ -10,7 +10,7 @@ interface TrainingGoalModalProps {
 
 export function TrainingGoalModal({ open, onClose, onOpenHelp }: TrainingGoalModalProps) {
   return (
-    <Modal open={open} title="训练目标" onClose={onClose}>
+    <Modal open={open} title="目标频率设置" onClose={onClose}>
       <TrainingGoalCard onOpenHelp={onOpenHelp} />
     </Modal>
   )

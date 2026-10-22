@@ -30,7 +30,7 @@ describe('main window frequency results', () => {
     ])
     renderAnalysis(portrait)
     const results = screen.getByRole('region', { name: '窗口频率结果' })
-    expect(within(results).getByText('最近 20 秒')).toBeTruthy()
+    expect(within(results).getByText('最近 10 秒')).toBeTruthy()
     expect(screen.getByTestId('window-f0').textContent).toBe('220Hz')
     expect(screen.getByTestId('window-f1').textContent).toBe('550Hz')
     expect(screen.getByTestId('window-f2').textContent).toBe('1800Hz')
@@ -46,6 +46,7 @@ describe('main window frequency results', () => {
 
   it('refreshes the displayed results when the retention window changes', () => {
     vi.useFakeTimers()
+    useAppStore.getState().setConfig({ audioRetentionSeconds: 20 })
     useAppStore.getState().setFrames([
       { time: 1, f0: 150, f1: 400, f2: 1000 },
       { time: 19, f0: 250, f1: 800, f2: 2000 },
@@ -81,9 +82,9 @@ describe('main window frequency results', () => {
     const onOpenHelp = vi.fn()
     renderAnalysis(false, onOpenHelp)
     for (const [topic, name] of [
-      ['f0', 'F0 音高：原理与训练方法'],
-      ['f1', 'F1 元音与开口：原理与训练方法'],
-      ['f2', 'F2 共振与音色：原理与训练方法'],
+      ['f0', 'F0 音高：使用说明'],
+      ['f1', 'F1 元音与开口：使用说明'],
+      ['f2', 'F2 共振与音色：使用说明'],
     ]) {
       fireEvent.click(screen.getByRole('button', { name }))
       expect(onOpenHelp).toHaveBeenLastCalledWith(topic)
@@ -104,7 +105,7 @@ describe('main window frequency results', () => {
   it.each([false, true])('shows each reading and target center in one result line (portrait=%s)', portrait => {
     useAppStore.getState().setFrames([{ time: 1, f0: 220, f1: 600, f2: 1800 }])
     renderAnalysis(portrait)
-    for (const [key, target] of [['f0', 240], ['f1', 900], ['f2', 1250]] as const) {
+    for (const [key, target] of [['f0', 240], ['f1', 915], ['f2', 1450]] as const) {
       const reading = screen.getByTestId(`window-${key}`)
       const center = screen.getByTestId(`target-${key}`)
       expect(reading.parentElement).toBe(center.parentElement)
@@ -118,11 +119,12 @@ describe('main window frequency results', () => {
   it('updates the target center beside its reading after editing', () => {
     renderAnalysis(false)
     expect(screen.getByTestId('target-f0').textContent).toBe('目标 240 Hz')
-    expect(screen.getByTestId('target-f1').textContent).toBe('目标 900 Hz')
-    expect(screen.getByTestId('target-f2').textContent).toBe('目标 1250 Hz')
+    expect(screen.getByTestId('target-f1').textContent).toBe('目标 915 Hz')
+    expect(screen.getByTestId('target-f2').textContent).toBe('目标 1450 Hz')
     act(() => useAppStore.getState().setBandCenter('f0', 260))
     expect(screen.getByTestId('target-f0').textContent).toBe('目标 260 Hz')
     expect(screen.getByTestId('window-f0').textContent).toBe('—Hz')
-    expect(screen.getByTestId('target-f1').textContent).toBe('目标 900 Hz')
+    expect(screen.getByTestId('target-f1').textContent).toBe('目标 946 Hz')
+    expect(screen.getByTestId('target-f2').textContent).toBe('目标 1479 Hz')
   })
 })

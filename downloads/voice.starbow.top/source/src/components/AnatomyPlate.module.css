@@ -1,0 +1,24 @@
+.plate { display: grid; gap: 28px; min-width: 0; color: #565163; }
+.view { min-width: 0; }
+.view + .view { border-top: 1px solid #eeeaf1; padding-top: 24px; }
+.view header { text-align: center; }
+.view h4 { margin: 0; color: #5e4d72; font-size: 16px; font-weight: 650; letter-spacing: .02em; }
+.view header p { margin: 6px 0 8px; color: #938797; font-size: 12px; }
+.scrollCanvas { max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin; }
+.scrollCanvas:focus-visible { outline: 2px solid #b8a0d3; outline-offset: 3px; border-radius: 6px; }
+.viewSvg { display: block; width: 100%; height: auto; min-width: 680px; }
+.viewSvg path { stroke-linecap: round; stroke-linejoin: round; }
+.leader { fill: none; stroke: #a6a0a9; stroke-width: 1.05; }
+.labels { fill: #61586a; font: 18px var(--font-sans, 'Microsoft YaHei', sans-serif); }
+.footnote { fill: #918595; font: 13px var(--font-sans, 'Microsoft YaHei', sans-serif); }
+.sagittal > figure { width: min(100%, 860px); min-width: 650px; margin: 0 auto; }
+.sagittal > figure > figcaption { display: none; }
+.scrollHint { display: none; }
+@media (max-width: 700px) {
+  .plate { gap: 22px; }
+  .view + .view { padding-top: 20px; }
+  .view h4 { font-size: 14px; }
+  .view header p { font-size: 11px; }
+  .scrollHint { display: block; margin: 8px 8px 10px; color: #948b9b; font-size: 11px; }
+  .footnote { font-size: 14px; }
+}

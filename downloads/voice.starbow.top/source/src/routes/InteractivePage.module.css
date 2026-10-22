@@ -1,0 +1,14 @@
+.page { flex: 1; min-height: 0; overflow-y: auto; }
+.inner { width: min(1580px, 100%); margin: auto; padding: 18px 24px 20px; }
+.header { display: flex; justify-content: space-between; align-items: center; gap: 24px; margin-bottom: 14px; }
+.header h1 { margin-bottom: 6px; }
+.lead { color: var(--text-soft); font-size: var(--text-md); margin: 0; max-width: 800px; line-height: var(--leading-body); }
+.header > a { flex-shrink: 0; text-decoration: none; color: var(--primary); font-size: var(--text-md); border: 1px solid var(--border); border-radius: 10px; background: #ffffffb0; padding: 10px 16px; }
+.header > a span { margin-left: 12px; }
+.footer { display: flex; align-items: center; padding-top: 20px; font-size: var(--text-sm); }
+.footer a { margin-left: auto; color: var(--primary); text-decoration: none; }
+@media (max-width: 768px) {
+  .inner { padding: 20px 14px 24px; }
+  .header { display: block; margin-bottom: 18px; }
+  .header > a { display: inline-block; margin-top: 12px; padding: 6px 11px; }
+}

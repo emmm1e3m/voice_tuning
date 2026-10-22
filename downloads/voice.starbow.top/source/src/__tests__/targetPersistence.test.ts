@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { useAppStore } from '../store/appStore'
-import { VOWEL_PRESETS } from '../types'
 import { getBandCenter } from '../config/targetBandRules'
 
 beforeEach(() => useAppStore.getState().reset())
@@ -25,8 +24,8 @@ describe('当前元音与目标持久化', () => {
     expect(state.activePreset).toBe('vowel-u')
     expect(state.targetMode).toBe('vowel')
     expect(getBandCenter(state.bands.f0.range)).toBe(280)
-    expect(state.bands.f1.range).toEqual(VOWEL_PRESETS['vowel-u'].f1)
-    expect(state.bands.f2.range).toEqual(VOWEL_PRESETS['vowel-u'].f2)
+    expect(state.bands.f1.range).toEqual([362, 562])
+    expect(state.bands.f2.range).toEqual([800, 1100])
   })
 
   it('手动模式刷新保留当前元音、F0/F1/F2 与模式，不依赖覆盖保存的调用时机', async () => {

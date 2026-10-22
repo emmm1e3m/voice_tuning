@@ -40,11 +40,11 @@ interface AppActions {
 type AppStore = AppState & AppActions
 
 const vowelA = VOWEL_PRESETS['vowel-a']
-const DEFAULT_BANDS: TargetBands = {
+const DEFAULT_BANDS: TargetBands = recommendVowelTargets({
   f0: { range: vowelA.f0, color: '#8b67c5' },
   f1: { range: vowelA.f1, color: '#d76e97' },
   f2: { range: vowelA.f2, color: '#5c92c7' },
-}
+}, 'vowel-a')
 
 function resolveBands(name: string, overrides: PresetOverride[]): TargetBands {
   const preset = VOWEL_PRESETS[name]
@@ -101,7 +101,7 @@ const storedOverrides = loadStoredOverrides()
 
 const initialState: AppState = {
   config: DEFAULT_CONFIG,
-  bands: resolveBands('vowel-a', storedOverrides),
+  bands: storedOverrides.length ? resolveBands('vowel-a', storedOverrides) : DEFAULT_BANDS,
   activePreset: 'vowel-a',
   presetOverrides: storedOverrides,
   targetMode: storedOverrides.length ? 'manual' : 'vowel',
@@ -149,7 +149,7 @@ export const useAppStore = create<AppStore>()(
       switchPreset: (name) => set((state) => Object.prototype.hasOwnProperty.call(VOWEL_PRESETS, name)
         ? { activePreset: name, bands: state.targetMode === 'vowel'
           ? recommendVowelTargets(resolveBands(name, state.presetOverrides), name, getBandCenter(state.bands.f0.range))
-          : resolveBands(name, state.presetOverrides) }
+          : updateTargetCenter(resolveBands(name, state.presetOverrides), 'f0', getBandCenter(state.bands.f0.range)) }
         : {}),
 
       savePresetOverride: (key, f0, f1, f2) => set((state) => {

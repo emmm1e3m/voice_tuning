@@ -1,6 +1,15 @@
 /* 统一的粉蓝主题与频率配色，桌面和手机共用。 */
 :root {
-  --font-scale: 1.25;
+  --font-scale: 1;
+  --text-xs: calc(12px * var(--font-scale));
+  --text-sm: calc(13px * var(--font-scale));
+  --text-md: calc(14px * var(--font-scale));
+  --text-lg: calc(16px * var(--font-scale));
+  --heading-card: calc(16px * var(--font-scale));
+  --heading-section: calc(22px * var(--font-scale));
+  --heading-page: calc(32px * var(--font-scale));
+  --leading-body: 1.75;
+  --analysis-card-height: 680px;
   color-scheme: light;
   --bg: #f7fbff;
   --bg-pink: #fff8fb;
@@ -28,8 +37,8 @@
   --c-f0: #8b67c5;
   --c-f1: #d76e97;
   --c-f2: #5c92c7;
-  --font-sans: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-  --font-mono: "Cascadia Code", Consolas, monospace;
+  --font-sans: "Segoe UI Variable Text", "Segoe UI", "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei", sans-serif;
+  --font-mono: "Cascadia Mono", "Cascadia Code", Consolas, monospace;
   --color-text-secondary: var(--text-soft);
   --color-text-tertiary: var(--text-mute);
   --color-border-default: var(--border);
@@ -49,7 +58,13 @@
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
-body { font: calc(14px * var(--font-scale))/1.6 var(--font-sans); color: var(--text); background: linear-gradient(135deg,var(--bg-pink),var(--bg) 50%,var(--bg-warm)); background-attachment: fixed; -webkit-font-smoothing: antialiased; }
+body { font: var(--text-md)/var(--leading-body) var(--font-sans); color: var(--text); background: linear-gradient(135deg,var(--bg-pink),var(--bg) 50%,var(--bg-warm)); background-attachment: fixed; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+svg text { font-family: var(--font-sans); }
+h1, h2 { text-wrap: balance; }
+.page-title { margin: 0; color: var(--text); font-size: var(--heading-page); font-weight: 650; line-height: 1.35; letter-spacing: -.02em; }
+@media (max-width: 768px) {
+  .page-title { font-size: var(--heading-section); }
+}
 button, input, select { font: inherit; }
 button { -webkit-tap-highlight-color: transparent; }
 button, a, input { touch-action: manipulation; }

@@ -60,7 +60,7 @@ describe('appStore', () => {
       const vowelA = VOWEL_PRESETS['vowel-a']
       const { bands } = useAppStore.getState()
       expect(bands.f0.range).toEqual(vowelA.f0)
-      expect(bands.f1.range).toEqual(vowelA.f1)
+      expect(bands.f1.range).toEqual([815, 1015])
     })
 
     it('merges partial bands', () => {
@@ -77,21 +77,21 @@ describe('appStore', () => {
     it('moves only the selected center and keeps its fixed width at an ordering boundary', () => {
       const f2 = useAppStore.getState().bands.f2
       useAppStore.getState().setBandCenter('f1', 3400)
-      expect(useAppStore.getState().bands.f1.range).toEqual([900, 1100])
+      expect(useAppStore.getState().bands.f1.range).toEqual([1100, 1300])
       expect(useAppStore.getState().bands.f2).toBe(f2)
       const f1 = useAppStore.getState().bands.f1
       useAppStore.getState().setBandCenter('f2', 0)
-      expect(useAppStore.getState().bands.f2.range).toEqual([1100, 1400])
+      expect(useAppStore.getState().bands.f2.range).toEqual([1300, 1600])
       expect(useAppStore.getState().bands.f1).toBe(f1)
     })
 
-    it('preserves legacy centers while replacing different interval widths', () => {
+    it('preserves legacy formant centers while keeping the active F0 across vowels', () => {
       localStorage.setItem('voicebuilder-presets', JSON.stringify({ state: { presetOverrides: [
         { key: 'vowel-i', f0: [220, 300], f1: [280, 380], f2: [2500, 3000] },
       ] }, version: 0 }))
       useAppStore.persist.rehydrate()
       useAppStore.getState().switchPreset('vowel-i')
-      expect(useAppStore.getState().bands.f0.range).toEqual([220, 300])
+      expect(useAppStore.getState().bands.f0.range).toEqual([200, 280])
       expect(useAppStore.getState().bands.f1.range).toEqual([230, 430])
       expect(useAppStore.getState().bands.f2.range).toEqual([2600, 2900])
     })

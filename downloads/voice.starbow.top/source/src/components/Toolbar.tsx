@@ -12,11 +12,12 @@ interface ToolbarProps {
   moreMenu?: ReactNode
   recordButtonRef?: Ref<HTMLButtonElement>
   helpButtonRef?: Ref<HTMLButtonElement>
+  learning?: boolean
 }
 
-export function Toolbar({ toolItems, onToolClick, nav, pageTabs, moreMenu, recordButtonRef, helpButtonRef }: ToolbarProps) {
+export function Toolbar({ toolItems, onToolClick, nav, pageTabs, moreMenu, recordButtonRef, helpButtonRef, learning = false }: ToolbarProps) {
   return (
-    <header className={styles.toolbar} data-compact={moreMenu ? 'true' : 'false'}>
+    <header className={styles.toolbar} data-compact={moreMenu ? 'true' : 'false'} data-learning={learning}>
       <div className={styles.brand}>
         <span className={styles.logo} aria-hidden="true"><BrandMark /></span>
         <div><span className={styles.title}>声音练习室</span><span className={styles.subtitle}>VOICE STUDIO</span></div>

@@ -15,10 +15,10 @@ export function TargetPresetBar({ onOpenHelp }: { onOpenHelp?: (topic: HelpTopic
   const vowelKeys = Object.keys(VOWEL_PRESETS)
 
   return (
-    <details open className={styles.bar} aria-label="练习目标中心"
+    <details open className={styles.bar} aria-label="目标频率设置"
       onToggle={event => { if (!event.currentTarget.open) api.showInputMessage('f0', '') }}>
       <summary className={styles.summary}>
-        <span className={styles.label}>本次练习 · 目标中心</span>
+        <span className={styles.label}>目标频率设置</span>
         <span className={styles.currentVowel}>元音 {presetShortLabel(activePreset)}</span>
         <Icon name="arrow" size={14} className={styles.disclosure} />
       </summary>
@@ -43,13 +43,13 @@ export function TargetPresetBar({ onOpenHelp }: { onOpenHelp?: (topic: HelpTopic
             <div key={key} className={styles.bandGroup}>
               <div className={styles.bandHeading}>
                 <span><strong>{key.toUpperCase()}</strong> {key === 'f0' ? '音高' : key === 'f1' ? '第一共振峰' : '第二共振峰'}</span>
-                {onOpenHelp && <ContextHelpButton label={`${key.toUpperCase()} 目标原理与练习`} onClick={() => onOpenHelp(key)} />}
+                {onOpenHelp && <ContextHelpButton label={`${key.toUpperCase()} 目标说明`} onClick={() => onOpenHelp(key)} />}
               </div>
               <BandRangeRow bandKey={key} api={api} />
             </div>
           ))}
         </div>
-        <p className={styles.hint}>选择元音，再移动中心；参考宽度保持固定。输入后按 Enter 或移开焦点生效。</p>
+        <p className={styles.hint}>数值按 Enter 或移开焦点生效。</p>
       </div>
     </details>
   )

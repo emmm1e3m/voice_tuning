@@ -4,7 +4,6 @@ import { TrainingGoalCard } from '../components/mobile/TrainingGoalCard'
 import { TargetPresetBar } from '../components/TargetPresetBar'
 import { useAppStore } from '../store/appStore'
 import { getBandCenter, TARGET_HALF_WIDTH_HZ } from '../config/targetBandRules'
-import { VOWEL_PRESETS } from '../types'
 
 beforeEach(() => useAppStore.getState().reset())
 afterEach(() => { cleanup(); vi.restoreAllMocks() })
@@ -26,12 +25,12 @@ describe.each([['portrait', TrainingGoalCard], ['desktop', TargetPresetBar]] as 
     expect(confirm).toHaveBeenCalledWith(expect.stringContaining('全部元音的默认中心'))
     expect(useAppStore.getState().presetOverrides).toEqual([])
     expect(useAppStore.getState().activePreset).toBe('vowel-a')
-    expect(useAppStore.getState().bands.f1.range).toEqual(VOWEL_PRESETS['vowel-a'].f1)
+    expect(useAppStore.getState().bands.f1.range).toEqual([815, 1015])
   })
   it.each([
     ['f0', '-20', 40], ['f0', '1100', 460],
-    ['f1', '-20', 100], ['f1', '3400', 1000],
-    ['f2', '100', 1150], ['f2', '4000', 3350],
+    ['f1', '-20', 100], ['f1', '3400', 1200],
+    ['f2', '100', 1165], ['f2', '4000', 3350],
   ] as const)('clamps %s center %s identically and keeps all fixed widths', (key, entered, expected) => {
     render(<Component />)
     const input = screen.getByLabelText(`${key.toUpperCase()}目标中心`) as HTMLInputElement
@@ -45,15 +44,15 @@ describe.each([['portrait', TrainingGoalCard], ['desktop', TargetPresetBar]] as 
     expect(screen.getByRole('status')).toBeTruthy()
     for (const other of ['f0', 'f1', 'f2'] as const) {
       expect(updated[other].range[1] - updated[other].range[0]).toBe(TARGET_HALF_WIDTH_HZ[other] * 2)
-      if (other !== key) expect(updated[other]).toBe(before[other])
+      if (key !== 'f0' && other !== key) expect(updated[other]).toBe(before[other])
     }
   })
   it('moves the center with keyboard arrows and retains its override across vowel switches', () => {
     render(<Component />)
     fireEvent.keyDown(screen.getByLabelText('F1中心滑杆'), { key: 'ArrowLeft' })
-    expect(useAppStore.getState().bands.f1.range).toEqual([790, 990])
+    expect(useAppStore.getState().bands.f1.range).toEqual([805, 1005])
     fireEvent.click(screen.getByRole('button', { name: 'i' }))
     fireEvent.click(screen.getByRole('button', { name: 'a' }))
-    expect((screen.getByLabelText('F1目标中心') as HTMLInputElement).value).toBe('890')
+    expect((screen.getByLabelText('F1目标中心') as HTMLInputElement).value).toBe('905')
   })
 })

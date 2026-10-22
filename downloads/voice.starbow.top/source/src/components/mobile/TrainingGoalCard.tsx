@@ -16,7 +16,7 @@ export function TrainingGoalCard({ onOpenHelp }: { onOpenHelp?: (topic: HelpTopi
   const api = usePresetBands()
 
   return (
-    <section className={styles.card} aria-label="训练目标" data-testid="training-goal-card">
+    <section className={styles.card} aria-label="目标频率设置" data-testid="training-goal-card">
       <div className={styles.intro}>
         <p className={styles.description}>选择元音，移动目标中心</p>
         <button type="button" className={styles.reset} aria-label="重置所有预设" title="恢复全部元音默认值" onClick={api.onReset}>
@@ -36,7 +36,7 @@ export function TrainingGoalCard({ onOpenHelp }: { onOpenHelp?: (topic: HelpTopi
           <div key={key} className={`${styles.band} ${styles[key]}`}>
             <div className={styles.bandHeader}>
               <h4 className={styles.bandTitle}><span className={styles.dot} />{key.toUpperCase()} <span>{BAND_NAMES[key]}</span></h4>
-              {onOpenHelp && <ContextHelpButton label={`${key.toUpperCase()} 目标原理与练习`} onClick={() => onOpenHelp(key)} />}
+              {onOpenHelp && <ContextHelpButton label={`${key.toUpperCase()} 目标说明`} onClick={() => onOpenHelp(key)} />}
             </div>
             <BandRangeRow bandKey={key} api={api} />
           </div>

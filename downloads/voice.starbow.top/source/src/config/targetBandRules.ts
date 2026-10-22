@@ -16,12 +16,31 @@ export function rangeFromCenter(key: TargetBandKey, center: number): [number, nu
   return [center - half, center + half]
 }
 
-// F0 只提供音高目标；共振峰参考独立取自元音预设，不能由 F0 推算个人声道。
+// 低档取手册男性 F0 85–155 Hz 的中点，高档沿用各元音的 F0 练习参考中心。
+// 两档共振峰取手册普通话成年男女表的区间中点；档位插值服务于推荐，不预测个人声道。
+const VOWEL_FORMANT_ANCHORS: Readonly<Record<string, { low: readonly [number, number]; high: readonly [number, number] }>> = {
+  'vowel-a': { low: [730, 1275], high: [915, 1450] },
+  'vowel-o': { low: [425, 765], high: [475, 855] },
+  'vowel-e': { low: [495, 1225], high: [600, 1500] },
+  'vowel-i': { low: [330, 1950], high: [395, 2525] },
+  'vowel-u': { low: [395, 850], high: [445, 925] },
+  'vowel-yu': { low: [350, 1700], high: [385, 2150] },
+}
+
 export function recommendVowelTargets(bands: TargetBands, presetName: string, f0Center = getBandCenter(bands.f0.range)): TargetBands {
-  const preset = VOWEL_PRESETS[presetName] ?? VOWEL_PRESETS['vowel-a']
-  const matches = (key: 'f1' | 'f2') => bands[key].range[0] === preset[key][0] && bands[key].range[1] === preset[key][1]
-  const recommended = normalizeTargetBands({ ...bands, f1: matches('f1') ? bands.f1 : { ...bands.f1, range: preset.f1 }, f2: matches('f2') ? bands.f2 : { ...bands.f2, range: preset.f2 } })
-  return updateTargetCenter(recommended, 'f0', f0Center)
+  const name = Object.prototype.hasOwnProperty.call(VOWEL_FORMANT_ANCHORS, presetName) ? presetName : 'vowel-a'
+  const reference = VOWEL_FORMANT_ANCHORS[name]
+  const withF0 = updateTargetCenter(bands, 'f0', f0Center)
+  const position = (getBandCenter(withF0.f0.range) - 120) / (getBandCenter(VOWEL_PRESETS[name].f0) - 120)
+  let recommended = withF0
+  for (const [index, key] of (['f1', 'f2'] as const).entries()) {
+    // 锚点外按相同斜率延伸；合法 F0 范围内六元音均保持共振峰顺序和完整参考宽度。
+    const range = rangeFromCenter(key, Math.round(reference.low[index] + (reference.high[index] - reference.low[index]) * position))
+    if (range[0] !== recommended[key].range[0] || range[1] !== recommended[key].range[1]) {
+      recommended = { ...recommended, [key]: { ...recommended[key], range } }
+    }
+  }
+  return normalizeTargetBands(recommended)
 }
 
 export function getTargetCenterBounds(key: TargetBandKey, bands: TargetBands): [number, number] {

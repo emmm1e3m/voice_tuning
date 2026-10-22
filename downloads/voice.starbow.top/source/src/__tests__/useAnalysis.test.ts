@@ -6,6 +6,7 @@ import { useAppStore } from '../store/appStore'
 import { useToastStore } from '../store/toastStore'
 import { recordingBuffer } from '../audio/recordingBuffer'
 import { AUDIO_WINDOW_SECONDS, AUDIO_WINDOW_SAMPLES } from '../config/audioLimits'
+import { useRegisterCalibrationStore } from '../store/registerCalibrationStore'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -38,6 +39,7 @@ const mocks = vi.hoisted(() => ({
   startCapture: vi.fn(),
   stopCapture: vi.fn(),
   pipelineOptions: vi.fn(),
+  setRegisterOptions: vi.fn(),
 }))
 
 vi.mock('../dsp', () => ({
@@ -50,6 +52,7 @@ vi.mock('../dsp', () => ({
     pushChunk() {}
     flush() {}
     reset() {}
+    setRegisterOptions(options: unknown) { mocks.setRegisterOptions(options) }
     static analyze(...a: unknown[]) { return mocks.analyze(...a) }
   },
 }))
@@ -89,6 +92,7 @@ function toastMessages() {
 
 beforeEach(() => {
   useAppStore.getState().reset()
+  useRegisterCalibrationStore.getState().clearCalibration()
   useToastStore.setState({ toasts: [] })
   recordingBuffer.clear()
   vi.clearAllMocks()
@@ -318,6 +322,27 @@ describe('onRecord mic failure toasts', () => {
 })
 
 describe('retained duration and smoothing options', () => {
+  it('将个人校准应用到当前实时管线、已显示帧和后续导入', async () => {
+    mocks.startCapture.mockResolvedValue(undefined)
+    const { result } = renderHook(() => useAnalysis())
+    await act(async () => result.current.onRecord())
+    const magnitudes = new Float32Array(1025).fill(-90)
+    for (let harmonic = 1; harmonic <= 5; harmonic++) magnitudes[32 * harmonic] = harmonic === 1 ? 0 : -10
+    act(() => useAppStore.getState().appendFrame({ time: 1, f0: 250, f1: null, f2: null, voiced: true, magnitudes, register: 'mixed' }))
+    const samples = Array.from({ length: 120 }, (_, index) => ({ time: index * .01, f0: 250, harmonicCount: 3 }))
+    act(() => { useRegisterCalibrationStore.getState().saveSamples(samples) })
+    const options = { chestCount: 3.75, falsettoCount: 2.25 }
+    expect(mocks.setRegisterOptions).toHaveBeenCalledWith(options)
+    expect(useAppStore.getState().latestFrame?.register).toBe('chest')
+    mocks.isWavFile.mockReturnValue(true)
+    mocks.probeWavDuration.mockResolvedValue(1)
+    const audio = new Float32Array(16000)
+    mocks.parseWav.mockReturnValue({ samples: audio, sampleRate: 16000, numChannels: 1 })
+    mocks.analyze.mockReturnValue([])
+    await act(async () => result.current.handleFileChange({ target: { files: [wavFile()] } } as never))
+    expect(mocks.analyze).toHaveBeenCalledWith(audio, 16000, 'hybrid', true, 5, options)
+  })
+
   it.each([AUDIO_WINDOW_SECONDS - 5, AUDIO_WINDOW_SECONDS])('accepts a %s-second import and passes the selected smoothing window', async duration => {
     mocks.isWavFile.mockReturnValue(true)
     mocks.probeWavDuration.mockResolvedValue(duration)
@@ -327,7 +352,7 @@ describe('retained duration and smoothing options', () => {
     useAppStore.getState().setConfig({ formantSmoothingWindow: 10 })
     const { result } = renderHook(() => useAnalysis())
     await act(async () => result.current.handleFileChange({ target: { files: [wavFile()] } } as never))
-    expect(mocks.analyze).toHaveBeenCalledWith(samples, 16000, 'hybrid', true, 10)
+    expect(mocks.analyze).toHaveBeenCalledWith(samples, 16000, 'hybrid', true, 10, undefined)
     expect(recordingBuffer.read().length).toBe(samples.length)
     expect(toastMessages()).toEqual([])
   })

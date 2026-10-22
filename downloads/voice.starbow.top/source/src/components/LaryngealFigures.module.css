@@ -1,0 +1,18 @@
+.figure { min-width: 0; color: #565163; background: #fff; padding: 14px 4px 6px; }
+.figure svg { display: block; width: 100%; height: auto; }
+.scrollCanvas { min-width: 0; max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin; }
+.scrollCanvas:focus-visible { outline: 2px solid #9a80b8; outline-offset: -2px; }
+.scrollCanvas > svg { min-width: 660px; }
+.scrollHint { display: none; margin: 0 12px 10px; color: #83768b; font-size: 11px; }
+.figure text { fill: #56505f; font: 18px var(--font-sans, 'Microsoft YaHei', sans-serif); }
+.figure .title { font-size: 24px; font-weight: 650; fill: #4e435c; letter-spacing: .6px; }
+.figure .orientation { font-size: 14px; fill: #8b7e8f; letter-spacing: .5px; }
+.figure .label { font-size: 18px; font-weight: 550; }
+.figure .leader { fill: none; stroke: #a4a0a5; stroke-width: 1.1; }
+.figure .microLabel { font-size: 13px; fill: #8a808b; }
+.figure .insetTitle { font-size: 15px; fill: #625869; font-weight: 550; }
+.figure .footnote { font-size: 13px; fill: #918691; }
+@media (max-width: 720px) {
+  .figure { padding: 12px 0 4px; }
+  .scrollHint { display: block; }
+}

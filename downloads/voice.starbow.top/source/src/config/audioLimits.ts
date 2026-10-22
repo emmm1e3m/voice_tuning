@@ -1,5 +1,5 @@
 // 录音、回放、导入与图表共用同一时间窗口。
-export const AUDIO_WINDOW_SECONDS = 20
+export const AUDIO_WINDOW_SECONDS = 10
 export const AUDIO_SAMPLE_RATE = 16000
 export const ANALYSIS_HOP_SECONDS = 0.01
 export const AUDIO_WINDOW_SAMPLES = AUDIO_SAMPLE_RATE * AUDIO_WINDOW_SECONDS

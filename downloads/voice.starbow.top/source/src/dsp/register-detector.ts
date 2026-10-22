@@ -24,7 +24,7 @@ const DEFAULT_CHEST_COUNT = 5
 const DEFAULT_FALSETTO_COUNT = 2
 const DEFAULT_WINDOW = 5
 
-// Calibrated on labeled /a/ recordings: 真声 ~7 harmonics, 混声 ~3, 假声 ~1.8.
+// 默认值来自标注的 /a/ 录音：真声约 7 个谐波峰，混声约 3 个，假声约 1.8 个。
 export class RegisterDetector {
   private _chestCount: number
   private _falsettoCount: number

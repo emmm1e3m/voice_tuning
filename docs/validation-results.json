@@ -1,81 +1,88 @@
 {
-  "date": "2026-10-19",
-  "test_files": 86,
-  "tests": 698,
-  "passed": 698,
+  "date": "2026-10-22",
+  "releaseVerification": {
+    "tests": "97个文件、728项通过；教学页说明修改后另跑ManualPage两项测试通过",
+    "typescript": "passed",
+    "productionBase": "/voice_tuning/",
+    "screenshots": ["analysis-preview.jpg", "practice-preview.jpg", "statistics-preview.png", "statistics-report-preview.png", "interactive-preview.jpg", "manual-preview.jpg", "config-preview.jpg", "mobile-preview.jpg", "manual-mobile-preview.jpg"],
+    "manualRevisionNotice": "页头作者及版本下标注少量修订、校注与图示调整，并链接原站；1440px桌面和390px手机检查通过",
+    "browserConsole": "最终构建重新加载后无错误；构建期间旧页面引用过期chunk的404已通过刷新解决"
+  },
+  "testFiles": 97,
+  "tests": 728,
+  "passed": 728,
   "failed": 0,
+  "skipped": 0,
   "typescript": "passed",
-  "production_build": "passed",
-  "browser": "Chromium",
-  "viewports": [
-    "1440x1000",
-    "1024x900",
-    "390x844",
-    "360x900"
-  ],
-  "browser_checks": [
-    "主页面仅F0/F1/F2共振峰图；实际a.wav导入得到窗口中位数203/709/1255Hz",
-    "卡片同一行当前Hz/目标Hz，桌面与360/390px手机不溢出",
-    "两个固定导航标签往返，内外圆角均10px",
-    "图表悬停频率和时间均整数，原数据保留精度",
-    "平滑10帧、保留120秒提交并刷新保存；重设默认5帧/20秒",
-    "13.163秒重复元音样本导入并完整WAV下载，改5秒后WAV准确5秒",
-    "声区说明在手机宽度内显示，图例不隐藏关键实时结果",
-    "教程目录/手机章节选择、折叠答案与读图示例",
-    "声源频谱、元音空间拖拽/键盘/滑杆联动；手机内部横滚字号13.75px",
-    "图标均衡粉蓝对角渐变与favicon同步"
-  ],
-  "previous_iteration_checks": [
-    "模拟麦克风录音/停止/继续入口与权限失败重试",
-    "原手册7章26图访问成功",
-    "一键启动脚本冷启动与已有服务识别",
-    "钢琴鼠标、Enter/Space及菜单关闭"
-  ],
-  "browser_page_errors": [],
-  "limitations": [
-    "未验证物理麦克风/扬声器音质和真实手机设备",
-    "生产包仍有ECharts集中打包体积提示"
-  ],
-  "latestRevision": {
-    "date": "2026-10-22",
-    "unitAndDsp": {
-      "files": 91,
-      "total": 716,
-      "passed": 716,
-      "failed": 0
-    },
-    "typecheck": "passed",
-    "build": {
-      "status": "passed",
-      "base": "/voice_tuning/",
-      "existingWarning": "ECharts主包超过500kB"
-    },
-    "browser": {
-      "engine": "Chromium",
-      "desktopViewport": {
-        "width": 1440,
-        "height": 1000
-      },
-      "mobileWidths": [
-        360,
-        390
-      ],
-      "pageErrors": 0,
-      "horizontalPageOverflow": false,
-      "realAudio": "assets/a.wav imported and playback started",
-      "registerSegments": 11,
-      "checks": [
-        "six vowel shapes and F0/F1/F2 references",
-        "six articulator controls synchronize structure and frequency",
-        "reference/current envelope equality on reset",
-        "F0 changes harmonic spacing while F1/F2 envelope stays unchanged",
-        "spectrum horizontal scroll confined to component",
-        "register toggle, scale and hidden curve independence",
-        "recommended/manual targets and persisted vowel/F0",
-        "foreword, README attribution, algorithm copy, structural hints"
-      ]
-    },
-    "evidenceDirectory": "downloads/voice.starbow.top/source/.validation",
-    "evidenceNote": "本机截图不提交；旧的顶层验证记录为前轮结果"
-  }
+  "productionBuild": {
+    "status": "passed",
+    "base": "/voice_tuning/",
+    "htmlKilobytes": 0.7,
+    "splitting": "统计及学习路由、独立音高分析Worker、七章正文与原理及感知实测谱图数据按需加载",
+    "warnings": ["ECharts主包与实测图数据包超过500kB体积提示"]
+  },
+  "content": {
+    "chapters": 7,
+    "figures": 26,
+    "originalParagraphsExercisesTablesAndReferences": "preserved in order; pitch physiology and practice guidance corrected in place",
+    "pitchGuidance": "CT与TA协调、纵向刚度及有效振动组织；舒适音域逐步迁移至说话，移除统一180Hz、破音点目标与恒定平调要求",
+    "professionalReferences": "F0正文延续原文讲解语气，仅留编号；三条新增文献统一接续至文末[8]–[10]，原[1]–[7]完整保留",
+    "redrawCoverage": "15/26",
+    "codeRedrawnFigures": 15,
+    "praatScreenshots": 11,
+    "sourceImagesInRenderedManual": 11,
+    "spectrogramFigures": 5,
+    "canvasPanels": 5,
+    "vsaDigitizedPoints": 54,
+    "vsaSharedCoordinateScale": true,
+    "introduction": "正文直接从目录开始，保留页头作者及版本，删除重复扉页"
+  },
+  "statistics": {
+    "referenceRepository": "https://github.com/JPs-git/voice-builder",
+    "referenceCommit": "5c4483fff0cdf25cccd4e3b2d8d5834382b80457",
+    "recordingLimitSeconds": 60,
+    "chinesePassages": 2,
+    "englishPassages": 2,
+    "metrics": ["F0中位数", "P10", "P90", "有效音高时长及占比", "10Hz分箱时长分布"],
+    "statisticsRangeHz": [60, 500],
+    "rangePolicy": "500Hz纳入统计，高于500Hz单列时长与占比；有效F0不足3秒隐藏频率指标",
+    "session": "整段音频独立保留；切页暂停并保留草稿和最近报告，录制及分析时隐藏旧报告；刷新清除",
+    "audioFixture": "assets/aoe.wav；5.957392秒完整回放，中位数151Hz、P10为148Hz、P90为170Hz"
+  },
+  "browser": {
+    "engine": "Chromium",
+    "viewports": ["1440x1000", "1280x720", "390x844"],
+    "horizontalPageOverflow": false,
+    "checks": [
+      "五页导航、手册章节与小节地址、十主题使用帮助分离",
+      "统计页四段中英材料及自由说话可选，英文朗读区标记lang=en",
+      "真实WAV导入生成统计报告，完整音频可回放，切页后报告保留，刷新恢复准备状态",
+      "桌面及手机三项统计和分布图无页面横向溢出，频率轴标出60、100及整百刻度",
+      "交互及统计页标题计算样式相同：实色rgb(36,48,58)、opacity为1、字重650、桌面32px与43.2px行高",
+      "六滑块同时呈现，元音图拖动与舌位、下颌双向同步，保留张力、唇形及喉位",
+      "交互页上方结构与两列三行滑块，下方元音空间与频谱等宽等高；标题和坐标对齐，手机纵排",
+      "声带调节代表综合教学参数；F0由240调至437Hz时F1/F2保持900/1250Hz，泛音间距同步",
+      "F0/F1/F2关联灰显、灰显控件可操作、全部恢复",
+      "完整圆颅顶、突出后枕及枕颈过渡，部位、标签与引线悬停联动",
+      "喉部肌肉与软骨及三视角解剖图渲染复审",
+      "26图位包括15个代码图与11个真实Praat截图，男女VSA共54点并采用统一尺度",
+      "教学正文直接从目录开始，页头保留作者与版本",
+      "F0正文采用原文讲解语气并仅保留引用编号，文末[1]–[10]连续排列，新增三条链接显示正常",
+      "单层贯穿图高的竖直声区时间背景，静音与缺口留白",
+      "配置内开始及停止录音、采集约1.2秒稳定边界声；关闭配置取消未完成采样，主图下方不再显示校准入口",
+      "谐波校准要求相近音高、元音、响度、设备及麦克风位置",
+      "随F0推荐在两档元音参考值之间插值，手调F1/F2进入手动模式",
+      "默认保留10秒，桌面目标卡与图表均为680px高",
+      "已移除元音方向键控制、参考轮廓与逐帧实时反馈",
+      "手机图表刻度、组件内横滚与无整页横向溢出"
+    ]
+  },
+  "localServer": "http://127.0.0.1:5173/",
+  "launcherCheckOnly": "passed",
+  "cleanup": [
+    "删除无引用的旧实验和手册整合模块、旧帮助抽屉与过时TODO",
+    "删除已无调用的整体反馈Hook、命中评估器及其专属类型与测试",
+    "清理测试原始报告、旧预览与Python缓存；保留准确性参考原资料",
+    "更新当前使用说明、UI规范及维护记录"
+  ]
 }

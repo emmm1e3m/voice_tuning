@@ -21,7 +21,7 @@ export function LearningStrip({ onOpenHelp }: { onOpenHelp?: (topic: HelpTopic) 
       <div className={styles.learning}>
       {DIMENSIONS.map(item => (
         <button key={item.key} type="button" className={styles.dimension} data-dimension={item.key}
-          aria-label={`${item.key.toUpperCase()} ${item.name}：原理与训练方法`}
+          aria-label={`${item.key.toUpperCase()} ${item.name}：使用说明`}
           onClick={() => onOpenHelp?.(item.key)}>
           <span className={styles.top}><b>{item.key.toUpperCase()}</b><span className={styles.name}>{item.name}</span><span className={styles.arrow}><Icon name="help" size={17} /></span></span>
           <span className={styles.resultLine}>

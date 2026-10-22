@@ -10,7 +10,7 @@ describe('TargetPresetBar', () => {
     const details = container.querySelector('details')!
     const summary = container.querySelector('summary')!
     expect(details.open).toBe(true)
-    expect(summary.textContent).toContain('本次练习 · 目标中心')
+    expect(summary.textContent).toContain('目标频率设置')
     expect(summary.textContent).toContain('元音 a')
     expect(summary.querySelector('button')).toBeNull()
     fireEvent.click(screen.getByRole('button', { name: 'i' }))
@@ -21,7 +21,7 @@ describe('TargetPresetBar', () => {
   })
   it('shows six vowels, three center inputs and exactly three single sliders', () => {
     render(<TargetPresetBar />)
-    fireEvent.click(screen.getByText('本次练习 · 目标中心'))
+    fireEvent.click(screen.getByText('目标频率设置'))
     for (const label of ['a', 'o', 'e', 'i', 'u', 'ü']) expect(screen.getByRole('button', { name: label })).toBeTruthy()
     expect(screen.getAllByRole('spinbutton')).toHaveLength(3)
     expect(screen.getAllByRole('slider')).toHaveLength(3)
@@ -31,21 +31,21 @@ describe('TargetPresetBar', () => {
   it('retains the principle and practice entry for each F', () => {
     const open = vi.fn()
     render(<TargetPresetBar onOpenHelp={open} />)
-    fireEvent.click(screen.getByText('本次练习 · 目标中心'))
+    fireEvent.click(screen.getByText('目标频率设置'))
     for (const key of ['f0', 'f1', 'f2']) {
-      fireEvent.click(screen.getByLabelText(`${key.toUpperCase()} 目标原理与练习`))
+      fireEvent.click(screen.getByLabelText(`${key.toUpperCase()} 目标说明`))
       expect(open).toHaveBeenLastCalledWith(key)
     }
   })
   it('switches vowel centers and commits one numeric target', () => {
     render(<TargetPresetBar />)
-    fireEvent.click(screen.getByText('本次练习 · 目标中心'))
+    fireEvent.click(screen.getByText('目标频率设置'))
     fireEvent.click(screen.getByRole('button', { name: 'i' }))
     const input = screen.getByLabelText('F1目标中心') as HTMLInputElement
-    expect(input.value).toBe('330')
+    expect(input.value).toBe('386')
     fireEvent.change(input, { target: { value: '400' } })
     fireEvent.blur(input)
     expect(useAppStore.getState().bands.f1.range).toEqual([300, 500])
-    expect(useAppStore.getState().bands.f2.range).toEqual([2600, 2900])
+    expect(useAppStore.getState().bands.f2.range).toEqual([2293, 2593])
   })
 })

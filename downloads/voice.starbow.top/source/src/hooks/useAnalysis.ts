@@ -9,6 +9,9 @@ import type { AnalysisFrame } from '../types'
 import { AUDIO_SAMPLE_RATE } from '../config/audioLimits'
 import { getAnalyticsPage, track } from '../analytics/analytics'
 import { recordPracticeSamples } from '../analytics/practiceProgress'
+import { useRegisterCalibrationStore } from '../store/registerCalibrationStore'
+import { registerOptionsForCalibration } from '../dsp/register-calibration'
+import { RegisterDetector } from '../dsp/register-detector'
 
 const STEREO_NOTICE = '该音频为双声道，仅使用第 0 声道进行分析'
 
@@ -53,6 +56,7 @@ function importErrorMessage(err: unknown): string {
 
 export function useAnalysis() {
   const pipelineRef = useRef<InstanceType<typeof AnalysisPipeline> | null>(null)
+  const captureAbortRef = useRef<AbortController | null>(null)
   const frameOffsetRef = useRef(0)
   const dataSourceRef = useRef<'mic' | 'file'>('mic')
   const [dataSource, setDataSource] = useState<'mic' | 'file'>('mic')
@@ -61,9 +65,27 @@ export function useAnalysis() {
   const [isRequesting, setIsRequesting] = useState(false)
   const [isImporting, setIsImporting] = useState(false)
 
+  useEffect(() => useRegisterCalibrationStore.subscribe((state, previous) => {
+    if (state.calibration !== previous.calibration) {
+      const options = registerOptionsForCalibration(state.calibration)
+      pipelineRef.current?.setRegisterOptions(options)
+      // 已显示的录音也用新边界重新着色，避免同一图表混用两套标定。
+      const store = useAppStore.getState()
+      const detector = new RegisterDetector(options)
+      const frames = store.frames.map(frame => {
+        const result = detector.push({ f0: frame.f0, voiced: frame.voiced ?? false, magnitudes: frame.magnitudes, sampleRate: AUDIO_SAMPLE_RATE })
+        return { ...frame, register: result.register, registerConfidence: result.confidence }
+      })
+      store.setFrames(frames)
+      if (store.latestFrame) store.setLatestFrame(frames.find(frame => frame.time === store.latestFrame!.time) ?? null)
+    }
+  }), [])
+
   // ── Shared stop-recording helper ──
 
   const stopRecording = useCallback((flush: boolean) => {
+    captureAbortRef.current?.abort()
+    captureAbortRef.current = null
     const pipeline = pipelineRef.current
     if (pipeline) {
       if (flush) {
@@ -84,6 +106,7 @@ export function useAnalysis() {
   // Cleanup on unmount
   useEffect(() => {
     return () => {
+      captureAbortRef.current?.abort()
       pipelineRef.current?.reset()
       pipelineRef.current = null
       getAudioEngine().stopCapture()
@@ -107,6 +130,7 @@ export function useAnalysis() {
     }
     const frames = AnalysisPipeline.analyze(
       samples, AUDIO_SAMPLE_RATE, config.formantMethod, config.formantSmoothing, config.formantSmoothingWindow,
+      registerOptionsForCalibration(useRegisterCalibrationStore.getState().calibration),
     )
     recordingBuffer.clear()
     recordingBuffer.write(samples)
@@ -131,6 +155,8 @@ export function useAnalysis() {
     if (isRequesting) return
 
     setIsRequesting(true)
+    const captureAbort = new AbortController()
+    captureAbortRef.current = captureAbort
 
     const config = useAppStore.getState().config  // 快照
 
@@ -142,7 +168,8 @@ export function useAnalysis() {
     }
 
     try {
-      await getAudioEngine().startCapture(onAudioChunk)
+      await getAudioEngine().startCapture(onAudioChunk, { signal: captureAbort.signal })
+      if (captureAbort.signal.aborted) return
 
       // Only create pipeline AFTER capture succeeds
       pipelineRef.current = new AnalysisPipeline({
@@ -153,6 +180,7 @@ export function useAnalysis() {
         formantSmoothing: config.formantSmoothing,
         formantSmoothingWindow: config.formantSmoothingWindow,
         frameOffset: frameOffsetRef.current,
+        registerOptions: registerOptionsForCalibration(useRegisterCalibrationStore.getState().calibration),
       })
 
       dataSourceRef.current = 'mic'
@@ -162,6 +190,7 @@ export function useAnalysis() {
       const page = getAnalyticsPage()
       if (page) track('record_start', { page })
     } catch (err) {
+      if (captureAbort.signal.aborted) return
       const page = getAnalyticsPage()
       if (page) track('record_error', { page, reason: recordingErrorReason(err) })
       console.error('Failed to start recording:', err)
@@ -257,7 +286,10 @@ export function useAnalysis() {
     }
   }, [stopRecording, commitImport, isImporting])
 
+  const onSuspend = useCallback(() => stopRecording(true), [stopRecording])
+
   return {
+    onSuspend,
     onRecord,
     onImport,
     onClear,

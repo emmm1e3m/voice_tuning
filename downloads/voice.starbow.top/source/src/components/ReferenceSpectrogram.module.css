@@ -1,0 +1,58 @@
+.reference { --formants: #bd5877; --pitch: #477eb8; --intensity: #af842f; --waveform: #576c83; color: #718095; min-width: 0; padding: 4px 4px 10px; }
+.loading { min-height: 220px; display: flex; justify-content: center; align-items: center; gap: 12px; color: var(--text-mute); font-size: 12px; }
+.loading button { color: var(--primary); background: var(--primary-soft); border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px; cursor: pointer; font: inherit; }
+.reference .title { color: #495c73; font: 600 15px/1.6 var(--font-sans); letter-spacing: -.01em; margin: 0 0 20px; }
+.panels { display: grid; gap: 17px; }
+.chartScroll { overflow-x: auto; overflow-y: hidden; padding-top: 2px; }
+.reference .scrollHint { display: none; }
+.panel { min-width: 0; }
+.axisLabels { display: flex; align-items: baseline; gap: 12px; color: #8997a8; font-size: 10px; line-height: 1.5; margin: 0 0 11px 40px; min-height: 15px; }
+.axisLabels > strong { margin-left: auto; font-weight: 550; color: #67798f; font-size: 11px; }
+.rightAxisLabels { display: flex; flex-wrap: wrap; gap: 10px; margin-left: auto; }
+.chart { --axis-width: 40px; --right-axis-width: 36px; display: grid; row-gap: 9px; }
+.scale { position: relative; grid-row: 1; font: 10px/1 var(--font-mono); color: #92a0b0; }
+.scale > span { position: absolute; right: 7px; transform: translateY(-50%); white-space: nowrap; }
+.scale > span:first-child { transform: translateY(-10%); }
+.scale > span:last-child { transform: translateY(-90%); }
+.rightScale > span { right: auto; left: 6px; }
+.plot { position: relative; grid-column: 2; grid-row: 1; width: 100%; min-width: 0; min-height: 130px; overflow: hidden; border: 1px solid #dbe1e9; background: #fff; border-radius: 3px; }
+.plot > canvas, .plot > svg { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+.gridLine { fill: none; stroke: #70849c; stroke-width: .6px; opacity: .17; }
+.plot g[data-kind='formants'] { fill: var(--formants); }
+.plot g[data-kind='pitch'] { fill: var(--pitch); }
+.plot g[data-kind='intensity'] { fill: var(--intensity); }
+.plot g[data-kind='waveform'] { fill: var(--waveform); }
+.segments { position: absolute; inset: 6px 0 auto; pointer-events: none; height: 22px; }
+.segments > span { position: absolute; transform: translateX(-50%); padding: 2px 7px; border-radius: 4px; background: #ffffffeb; color: #5b697d; font-size: 10px; font-weight: 550; line-height: 1.6; white-space: nowrap; box-shadow: 0 0 0 1px #e5eaf2b3; }
+.timeScale { position: relative; grid-column: 2; grid-row: 2; height: 12px; font: 10px/1 var(--font-mono); color: #92a0b0; }
+.timeScale > span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+.timeScale > span:first-child { transform: none; }
+.timeScale > span:last-child { transform: translateX(-100%); }
+.reference .timeLabel { text-align: center; font-size: 10px; color: #8997a8; margin: 5px 0 0; line-height: 1.7; }
+.panel[data-waveform] .plot { min-height: 60px; max-height: 80px; }
+.panel[data-waveform] .timeScale, .panel[data-waveform] .timeLabel { display: none; }
+.legend { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px 18px; margin-top: 18px; font-size: 10px; line-height: 1.6; color: #8693a5; }
+.legend > span { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.legend i { display: inline-block; width: 14px; height: 3px; border-radius: 3px; background: currentColor; }
+.legend .densitySwatch { height: 7px; border-radius: 2px; background: linear-gradient(90deg,#e9ebee,#5e6470); }
+.reference [data-kind='formants'] { color: var(--formants); }
+.reference [data-kind='pitch'] { color: var(--pitch); }
+.reference [data-kind='intensity'] { color: var(--intensity); }
+.reference [data-kind='waveform'] { color: var(--waveform); }
+@media (max-width: 650px) {
+  .reference { padding: 2px 0 8px; }
+  .reference .title { font-size: 13px; margin: 0 4px 18px; }
+  .axisLabels { margin-left: 48px; gap: 9px; font-size: 11px; }
+  .axisLabels > strong { font-size: 11px; }
+  .rightAxisLabels { gap: 7px; }
+  .chart { --axis-width: 48px; --right-axis-width: 42px; }
+  .plot { min-height: 125px; }
+  .scale, .timeScale { font-size: 11px; }
+  .scale > span { right: 5px; }
+  .rightScale > span { right: auto; left: 4px; }
+  .segments > span { font-size: 11px; padding: 2px 5px; }
+  .legend { font-size: 11px; gap: 7px 12px; margin-top: 15px; }
+  .reference .timeLabel { font-size: 11px; }
+  .reference[data-multiaxis] .panels { min-width: 480px; }
+  .reference .scrollHint { display: block; margin: -9px 4px 12px; color: var(--text-mute); font-size: 11px; line-height: 1.6; }
+}

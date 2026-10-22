@@ -44,7 +44,7 @@
   border-bottom: 1px solid var(--border);
 }
 
-.modalHeader h3 { margin: 0; font-size: calc(16px * var(--font-scale)); font-weight: 700; }
+.modalHeader h3 { margin: 0; font-size: var(--text-lg); font-weight: 700; }
 
 .modalClose {
   background: transparent;
@@ -78,7 +78,7 @@
   }
 
   .modalHeader h3 {
-    font-size: calc(17px * var(--font-scale));
+    font-size: var(--text-lg);
     font-weight: 600;
   }
 

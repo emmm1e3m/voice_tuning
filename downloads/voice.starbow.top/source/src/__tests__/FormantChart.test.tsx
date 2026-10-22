@@ -75,6 +75,8 @@ describe('FormantChart', () => {
     expect(area[0].name).toBe('混声')
     expect(area[0].xAxis).toBeCloseTo(.095)
     expect(area[1].xAxis).toBeCloseTo(.105)
+    expect(area[0]).not.toHaveProperty('yAxis')
+    expect(area[1]).not.toHaveProperty('yAxis')
     act(() => useChartDisplayStore.getState().setShowRegister(false))
     expect(seriesByName('__register').markArea.data).toEqual([])
   })

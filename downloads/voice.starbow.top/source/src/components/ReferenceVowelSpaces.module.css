@@ -1,0 +1,28 @@
+.figure { min-width: 0; container-type: inline-size; }
+.heading { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px 20px; padding: 0 16px 20px; }
+.heading h4 { margin: 0 !important; color: var(--text); font-size: 17px; font-weight: 600; }
+.legendGroup { display: grid; gap: 7px; }
+.legendLabel { margin: 0 !important; color: var(--text-mute); font-size: 11px; line-height: 1.7; }
+.legend { display: flex; flex-wrap: wrap; gap: 10px 18px; list-style: none; margin: 0; padding: 0; font-size: 12px; }
+.legend li { display: inline-flex; align-items: center; gap: 7px; }
+.legend li > span:first-child { display: inline-block; width: 20px; height: 2px; background: currentColor; }
+.viewport { max-width: 100%; overflow-x: auto; }
+.viewport:focus-visible { outline: 2px solid var(--accent, #8b67c5); outline-offset: -2px; border-radius: 4px; }
+.chart { display: block; width: 100%; min-width: 590px; height: auto; overflow: visible; font-family: var(--font-sans); }
+.plotBackground { fill: #fdfcfe; }
+.grid { fill: none; stroke: #eceaf0; stroke-width: 1; }
+.axis { fill: none; stroke: #a5a4b4; stroke-width: 1.5; }
+.tick { fill: #75717e; font-size: 20px; font-variant-numeric: tabular-nums; }
+.axisLabel { fill: #60596c; font-size: 23px; font-weight: 500; }
+.trace { fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; opacity: .83; }
+.marker { fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
+.vowel { fill: currentColor; font-family: "Segoe UI", "Arial", sans-serif; font-size: 23px; paint-order: stroke; stroke: white; stroke-width: 4px; stroke-linejoin: round; }
+.note { margin: 6px 0 5px !important; text-align: center; color: var(--text-mute); font-size: 11px; line-height: 1.7; }
+.scrollHint { display: none; }
+@container (max-width: 650px) {
+  .heading { align-items: flex-start; padding: 0 10px 12px; gap: 10px; }
+  .heading h4 { font-size: 15px; }
+  .legend { font-size: 11px; gap: 10px 12px; }
+  .scrollHint { display: block; margin: 0 10px 8px !important; color: var(--text-mute); font-size: 11px; }
+  .note { padding: 0 6px; font-size: 10px; }
+}

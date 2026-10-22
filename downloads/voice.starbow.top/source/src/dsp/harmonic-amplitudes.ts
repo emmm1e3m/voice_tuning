@@ -1,7 +1,7 @@
 const FFT_SIZE = 2048
 const MAX_HARMONICS = 10
 const WINDOW_HZ = 60
-const HARMONIC_DB_FLOOR = 20
+export const HARMONIC_DB_FLOOR = 20
 const SHR_FLOOR_HZ = 50
 const SHR_WINDOW_HZ = 15
 

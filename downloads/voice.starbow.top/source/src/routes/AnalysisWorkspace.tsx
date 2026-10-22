@@ -2,8 +2,6 @@ import { useOutletContext } from 'react-router-dom'
 import { useAppStore } from '../store/appStore'
 import type { ShellContext } from './AppShell'
 import { TargetPresetBar } from '../components/TargetPresetBar'
-import { FeedbackCard } from '../components/FeedbackCard'
-import { FeedbackHero } from '../components/mobile/FeedbackHero'
 import { FormantChart } from '../components/FormantChart'
 import { EmptyState } from '../components/EmptyState'
 import { ContextHelpButton } from '../components/ContextHelpButton'
@@ -23,13 +21,12 @@ export function AnalysisWorkspace({ layout }: { layout: 'landscape' | 'portrait'
     <div className={styles.inner}>
       <LearningStrip onOpenHelp={onOpenHelp} />
       <div className={styles.workspaceHeader}>
-        <div className={styles.workspaceTitle}><span className={styles.statusDot} data-recording={!!isCapturing} /><h1>声音分析</h1>{isCapturing && <span>录音中</span>}</div>
+        <div className={styles.workspaceTitle}><span className={styles.statusDot} data-recording={!!isCapturing} /><h1 className="page-title">声音分析</h1>{isCapturing && <span>录音中</span>}</div>
         <FrequencyScaleControl />
       </div>
       <main className={styles.content}>
-        {!portrait && <aside className={styles.sidePanel}><FeedbackCard onOpenHelp={onOpenHelp} /><TargetPresetBar onOpenHelp={onOpenHelp} /></aside>}
+        {!portrait && <aside className={styles.sidePanel}><TargetPresetBar onOpenHelp={onOpenHelp} /></aside>}
         <div className={styles.chartsColumn}>
-          {portrait && <div data-testid="feedback-hero" className={styles.portraitSlot}><FeedbackHero /></div>}
           <div className={styles.chartStack}>
             <section className={styles.card}>
               <div className={styles.chartHeader}>

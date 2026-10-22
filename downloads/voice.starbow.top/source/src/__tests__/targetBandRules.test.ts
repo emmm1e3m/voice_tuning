@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest'
-import { getBandCenter, getTargetCenterBounds, normalizeTargetBands, TARGET_HALF_WIDTH_HZ, updateTargetCenter } from '../config/targetBandRules'
+import { getBandCenter, getTargetCenterBounds, recommendVowelTargets, normalizeTargetBands, TARGET_HALF_WIDTH_HZ, updateTargetCenter } from '../config/targetBandRules'
 import { VOWEL_PRESETS, type TargetBands } from '../types'
 
 function makeBands(f0: [number, number], f1: [number, number], f2: [number, number]): TargetBands {
@@ -53,5 +53,35 @@ it('normalizes malformed numeric ranges without squeezing any fixed width', () =
     expect(normalized.f2.range[1]).toBeLessThanOrEqual(3500)
     for (const key of ['f0', 'f1', 'f2'] as const) expect(normalized[key].range[1] - normalized[key].range[0]).toBe(TARGET_HALF_WIDTH_HZ[key] * 2)
     expect(normalizeTargetBands(normalized)).toBe(normalized)
+  }
+})
+
+it('interpolates the documented reference anchors and extends them beyond the high F0 anchor', () => {
+  const bands = makeBands([200, 280], [800, 1000], [1100, 1400])
+  const centersAt = (f0: number) => {
+    const result = recommendVowelTargets(bands, 'vowel-a', f0)
+    return [getBandCenter(result.f1.range), getBandCenter(result.f2.range)]
+  }
+  expect(centersAt(120)).toEqual([730, 1275])
+  expect(centersAt(180)).toEqual([823, 1363])
+  expect(centersAt(240)).toEqual([915, 1450])
+  expect(centersAt(300)).toEqual([1008, 1538])
+})
+it('keeps all six vowel recommendations ordered with fixed widths throughout the F0 range', () => {
+  for (const [name, preset] of Object.entries(VOWEL_PRESETS)) {
+    const bands = makeBands(preset.f0, preset.f1, preset.f2)
+    let previousF1 = 0, previousF2 = 0
+    for (let f0 = 40; f0 <= 460; f0 += 5) {
+      const result = recommendVowelTargets(bands, name, f0)
+      expect(getBandCenter(result.f0.range)).toBe(f0)
+      expect(getBandCenter(result.f1.range)).toBeGreaterThanOrEqual(previousF1)
+      expect(getBandCenter(result.f2.range)).toBeGreaterThanOrEqual(previousF2)
+      expect(result.f1.range[1]).toBeLessThanOrEqual(result.f2.range[0])
+      expect(result.f1.range[0]).toBeGreaterThanOrEqual(0)
+      expect(result.f2.range[1]).toBeLessThanOrEqual(3500)
+      for (const key of ['f0', 'f1', 'f2'] as const) expect(result[key].range[1] - result[key].range[0]).toBe(TARGET_HALF_WIDTH_HZ[key] * 2)
+      previousF1 = getBandCenter(result.f1.range)
+      previousF2 = getBandCenter(result.f2.range)
+    }
   }
 })

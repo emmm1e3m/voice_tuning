@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { render, act } from '@testing-library/react'
 import { usePresetBands } from '../hooks/usePresetBands'
 import { useAppStore } from '../store/appStore'
-import { VOWEL_PRESETS } from '../types'
 
 let api: ReturnType<typeof usePresetBands>
 function Probe() { api = usePresetBands(); return null }
@@ -16,7 +15,7 @@ afterEach(() => vi.restoreAllMocks())
 describe('usePresetBands centers', () => {
   it('seeds one center draft per frequency', () => {
     render(<Probe />)
-    expect(api.localValues).toEqual({ f0: '240', f1: '900', f2: '1250' })
+    expect(api.localValues).toEqual({ f0: '240', f1: '915', f2: '1450' })
   })
   it('commits only after blur and saves the fixed-width override', () => {
     render(<Probe />)
@@ -45,9 +44,9 @@ describe('usePresetBands centers', () => {
     render(<Probe />)
     const f2 = useAppStore.getState().bands.f2
     commit('f1', '3000')
-    expect(useAppStore.getState().bands.f1.range).toEqual([900, 1100])
+    expect(useAppStore.getState().bands.f1.range).toEqual([1100, 1300])
     expect(useAppStore.getState().bands.f2).toBe(f2)
-    expect(api.inputMessages.f1).toContain('中心已调整为 1000 Hz')
+    expect(api.inputMessages.f1).toContain('中心已调整为 1200 Hz')
   })
   it('keeps decimal centers and persists them across preset switches', () => {
     render(<Probe />)
@@ -64,8 +63,8 @@ describe('usePresetBands centers', () => {
     act(() => api.onSliderChange('f2', 1150))
     act(() => api.onInputChange('f1', '1000'))
     act(() => api.onCommit('f1'))
-    expect(useAppStore.getState().bands.f1.range).toEqual([800, 1000])
-    expect(useAppStore.getState().bands.f2.range).toEqual([1000, 1300])
+    expect(useAppStore.getState().bands.f1.range).toEqual([815, 1015])
+    expect(useAppStore.getState().bands.f2.range).toEqual([1015, 1315])
   })
   it('updates immediately via the slider and saves the active vowel', () => {
     render(<Probe />)
@@ -82,7 +81,7 @@ describe('usePresetBands centers', () => {
     confirm.mockReturnValue(true)
     act(() => api.onReset())
     expect(useAppStore.getState().presetOverrides).toEqual([])
-    expect(useAppStore.getState().bands.f1.range).toEqual(VOWEL_PRESETS['vowel-a'].f1)
-    expect(api.localValues.f1).toBe('900')
+    expect(useAppStore.getState().bands.f1.range).toEqual([815, 1015])
+    expect(api.localValues.f1).toBe('915')
   })
 })

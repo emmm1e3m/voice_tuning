@@ -18,6 +18,7 @@ import { useFirstUseHelp } from '../hooks/useFirstUseHelp'
 import { FirstUseHelpBanner } from '../components/FirstUseHelpBanner'
 import { isAvailableFocusTarget } from '../components/focusTarget'
 import { getAnalyticsPage, track } from '../analytics/analytics'
+import { StatisticsSessionProvider } from '../statistics/StatisticsSessionProvider'
 
 const PORTRAIT_QUERY = '(max-width: 768px)'
 
@@ -36,9 +37,14 @@ export interface ShellContext {
 }
 
 export function AppShell() {
+  const isStatistics = useMatch('/statistics') != null
+  return <StatisticsSessionProvider active={isStatistics}><AppShellContent /></StatisticsSessionProvider>
+}
+
+function AppShellContent() {
   const [configOpen, setConfigOpen] = useState(false)
   const [helpOpen, setHelpOpen] = useState(false)
-  const [helpTopic, setHelpTopic] = useState<HelpTopic>('foreword')
+  const [helpTopic, setHelpTopic] = useState<HelpTopic>('quick-start')
   const [aboutOpen, setAboutOpen] = useState(false)
   const [goalOpen, setGoalOpen] = useState(false)
   const pianoScrollProgressRef = useRef(0)
@@ -49,11 +55,16 @@ export function AppShell() {
   const { eligible, dismiss } = useFirstUseHelp()
 
   const isPractice = useMatch('/practice') != null
+  const isInteractive = useMatch('/interactive') != null
+  const isManual = useMatch('/manual') != null
+  const isStatistics = useMatch('/statistics') != null
+  const isLearning = isInteractive || isManual
+  const hasPageControls = isLearning || isStatistics
   const isPortrait = useMediaQuery(PORTRAIT_QUERY)
   const activePreset = useAppStore(s => s.activePreset)
   useEffect(() => {
-    if (!isPortrait) setGoalOpen(false)
-  }, [isPortrait])
+    if (!isPortrait || hasPageControls) setGoalOpen(false)
+  }, [isPortrait, hasPageControls])
   const getHelpFallbackFocus = () =>
     [recordButtonRef.current, helpButtonRef.current, moreButtonRef.current].find(isAvailableFocusTarget) ?? null
 
@@ -63,7 +74,7 @@ export function AppShell() {
     setAboutOpen(overlay === 'about')
     setGoalOpen(overlay === 'goal')
   }
-  const openHelp = (topic: HelpTopic = 'foreword') => {
+  const openHelp = (topic: HelpTopic = isStatistics ? 'statistics' : 'quick-start') => {
     const page = getAnalyticsPage()
     if (!helpOpen && page) track('help_open', { page, topic })
     setHelpTopic(topic)
@@ -79,13 +90,26 @@ export function AppShell() {
     isRequesting,
     fileInputRef,
     handleFileChange,
+    suspend,
   } = useToolbar(
     () => openOverlay('config'),
     () => openHelp(),
     () => openOverlay('about'),
   )
 
+  useEffect(() => {
+    if (isStatistics) {
+      suspend()
+      setConfigOpen(false)
+    }
+  }, [isStatistics, suspend])
+
   const isPlaying = toolItems.some(item => item.id === 'playback' && item.label === '停止')
+  const visibleTools = isStatistics
+    ? toolItems.filter(item => ['help', 'about'].includes(item.id))
+    : isLearning
+    ? toolItems.filter(item => ['help', 'about'].includes(item.id) || (isCapturing && item.id === 'record') || (isPlaying && item.id === 'playback'))
+    : toolItems
 
   const shellContext: ShellContext = {
     onOpenHelp: openHelp,
@@ -106,21 +130,22 @@ export function AppShell() {
   return (
     <>
       <Toolbar
+        learning={hasPageControls}
         recordButtonRef={recordButtonRef}
         helpButtonRef={helpButtonRef}
-        toolItems={toolItems}
+        toolItems={visibleTools}
         onToolClick={handleClickTool}
         pageTabs={<MobilePageTabs />}
         moreMenu={isPortrait
           ? <MobileMoreMenu
               triggerButtonRef={moreButtonRef}
-              items={toolItems}
+              items={visibleTools}
               onSelect={handleClickTool}
             />
           : undefined}
       />
       <Outlet context={shellContext} />
-      {isPortrait && (
+      {isPortrait && !hasPageControls && (
         <>
           <RecordDock
             recordButtonRef={recordButtonRef}
@@ -142,13 +167,13 @@ export function AppShell() {
       <FirstUseHelpBanner
         layout={isPortrait ? 'portrait' : 'landscape'}
         visible={eligible}
-        suppressed={hasData || isCapturing || isRequesting || isPlaying || helpOpen || configOpen || aboutOpen || goalOpen}
+        suppressed={hasPageControls || hasData || isCapturing || isRequesting || isPlaying || helpOpen || configOpen || aboutOpen || goalOpen}
         dockHeight={dockHeight}
         onOpen={() => openHelp('quick-start')}
         onDismiss={() => { getHelpFallbackFocus()?.focus({ preventScroll: true }); dismiss() }}
       />
       <Toast />
-      <ConfigDrawer open={configOpen} onClose={() => setConfigOpen(false)} />
+      <ConfigDrawer open={configOpen} onClose={() => setConfigOpen(false)} isCapturing={isCapturing} isRequesting={isRequesting} onRecord={() => handleClickTool('record')} />
       <HelpDrawer open={helpOpen} onClose={() => setHelpOpen(false)} topic={helpTopic} onTopicChange={setHelpTopic} getFallbackFocus={getHelpFallbackFocus} />
       <AboutModal open={aboutOpen} onClose={() => setAboutOpen(false)} />
       <input ref={fileInputRef} type="file" accept="audio/*" hidden onChange={handleFileChange} />

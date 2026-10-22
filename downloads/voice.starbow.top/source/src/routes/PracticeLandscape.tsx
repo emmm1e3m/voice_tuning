@@ -20,7 +20,7 @@ export function PracticeLandscape() {
   return (
     <div className={styles.page} data-layout="landscape">
       <main className={styles.content}>
-        <header className={styles.practiceIntro}><button onClick={() => onOpenHelp?.('f0')}>F0 训练方法</button><h1>音高参考</h1><span>点击琴键听音，再录音对照音高。</span></header>
+        <header className={styles.practiceIntro}><button onClick={() => onOpenHelp?.('f0')}>F0 使用说明</button><h1 className="page-title">音高参考</h1><span>点击琴键听音，再录音对照音高。</span></header>
         <section className={styles.card}>
           <div className={styles.pianoArea}>
             <Piano currentMidi={currentMidi} onKeyPress={playNote} />

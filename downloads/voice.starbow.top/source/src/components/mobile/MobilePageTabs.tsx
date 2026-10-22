@@ -10,6 +10,15 @@ export function MobilePageTabs() {
       <NavLink to="/practice" className={({ isActive }) => `${styles.tab} ${isActive ? styles.active : ''}`}>
         音高参考
       </NavLink>
+      <NavLink to="/statistics" className={({ isActive }) => `${styles.tab} ${isActive ? styles.active : ''}`}>
+        统计分析
+      </NavLink>
+      <NavLink to="/interactive" className={({ isActive }) => `${styles.tab} ${isActive ? styles.active : ''}`}>
+        交互演示
+      </NavLink>
+      <NavLink to="/manual" className={({ isActive }) => `${styles.tab} ${isActive ? styles.active : ''}`}>
+        教学文档
+      </NavLink>
     </nav>
   )
 }

@@ -1,0 +1,6 @@
+export const MAX_STATISTICS_SECONDS = 60
+export const STATISTICS_SAMPLE_RATE = 16000
+export const STATISTICS_FRAME_SIZE = 800
+export const STATISTICS_HOP_SIZE = 160
+export const STATISTICS_MIN_F0 = 60
+export const STATISTICS_MAX_F0 = 500

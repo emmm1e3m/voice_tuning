@@ -3,16 +3,23 @@ import { FORMANT_METHODS } from '../types'
 import { useAppStore } from '../store/appStore'
 import { AUDIO_RETENTION_LIMITS, SMOOTHING_WINDOW_LIMITS } from '../config/appConfig'
 import { Modal } from './Modal'
+import { RegisterCalibration } from './RegisterCalibration'
 import styles from './ConfigDrawer.module.css'
 
-interface ConfigDrawerProps { open: boolean; onClose: () => void }
+interface ConfigDrawerProps {
+  open: boolean
+  onClose: () => void
+  isCapturing: boolean
+  isRequesting: boolean
+  onRecord: () => void
+}
 
 function validInteger(text: string, limits: { min: number; max: number }): boolean {
   const value = Number(text)
   return text.trim() !== '' && Number.isInteger(value) && value >= limits.min && value <= limits.max
 }
 
-export function ConfigDrawer({ open, onClose }: ConfigDrawerProps) {
+export function ConfigDrawer({ open, onClose, isCapturing, isRequesting, onRecord }: ConfigDrawerProps) {
   const config = useAppStore(s => s.config)
   const setConfig = useAppStore(s => s.setConfig)
   const [windowDraft, setWindowDraft] = useState(String(config.formantSmoothingWindow))
@@ -38,7 +45,7 @@ export function ConfigDrawer({ open, onClose }: ConfigDrawerProps) {
     <Modal open={open} title="配置" onClose={onClose}>
       <div className={styles.panel}>
         <section className={styles.section}>
-          <h4>共振峰算法</h4>
+          <h4>共振峰分析</h4>
           <div className={styles.options}>
             {FORMANT_METHODS.map(method => (
               <label key={method.value} className={styles.option} data-selected={config.formantMethod === method.value}>
@@ -52,30 +59,28 @@ export function ConfigDrawer({ open, onClose }: ConfigDrawerProps) {
               </label>
             ))}
           </div>
-          <p className={styles.hint}>算法从声音频谱估计 F1、F2：混合法优先使用 LPC，在结果缺失或 F1 异常跳变时尝试倒谱回退；纯 LPC 或纯倒谱可用于对比，但对低 F1、闭口元音等情况各有偏差。切换后从下一次录音或导入开始使用，已有曲线不会重新计算。</p>
-        </section>
-        <section className={styles.section}>
-          <div className={styles.sectionHeading}>
-            <h4>共振峰平滑</h4>
+          <p className={styles.hint}>算法与平滑设置用于下次录音或导入，已有曲线不会重新计算。</p>
+          <div className={styles.smoothingRow}>
             <label className={styles.toggle}>
               <input type="checkbox" checked={config.formantSmoothing}
                 onChange={event => setConfig({ formantSmoothing: event.target.checked })} />
               <span>启用平滑</span>
             </label>
+            <label className={styles.windowControl} htmlFor="smoothing-window">
+              <span>平滑窗口 <small>1–30 帧</small></span>
+              <span className={styles.numberField}>
+                <input id="smoothing-window" type="number" min={1} max={30} step={1} inputMode="numeric"
+                  disabled={!config.formantSmoothing} value={windowDraft} aria-invalid={!windowValid}
+                  onChange={event => setWindowDraft(event.target.value)}
+                  onBlur={commitWindow}
+                  onKeyDown={event => { if (event.key === 'Enter') { event.preventDefault(); commitWindow() } }} />
+                <span>帧</span>
+              </span>
+            </label>
           </div>
-          <label className={styles.numberRow} htmlFor="smoothing-window">
-            <span>平滑窗口 <small>1–30 帧</small></span>
-            <span className={styles.numberField}>
-              <input id="smoothing-window" type="number" min={1} max={30} step={1} inputMode="numeric"
-                disabled={!config.formantSmoothing} value={windowDraft} aria-invalid={!windowValid}
-                onChange={event => setWindowDraft(event.target.value)}
-                onBlur={commitWindow}
-                onKeyDown={event => { if (event.key === 'Enter') { event.preventDefault(); commitWindow() } }} />
-              <span>帧</span>
-            </span>
-          </label>
-          <p className={styles.hint}>每帧间隔 10 ms；较大窗口可抑制连续毛刺，也会延缓变化。生效于下次录音或导入。</p>
+          <p className={styles.hint}>每帧间隔 10 ms；较大窗口可抑制连续毛刺，也会延缓变化。</p>
         </section>
+        <RegisterCalibration isCapturing={isCapturing} isRequesting={isRequesting} onRecord={onRecord} />
         <section className={styles.section}>
           <h4>音频保留</h4>
           <label className={styles.numberRow} htmlFor="audio-retention">

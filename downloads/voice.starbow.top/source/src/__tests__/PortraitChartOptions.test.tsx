@@ -225,7 +225,7 @@ describe.each([false, true])('shared chart timeline, portrait=%s', portrait => {
     const frames = [{ time: 34, f0: 220, f1: 850, f2: 1250 }, { time: 35, f0: 220, f1: 850, f2: 1250 }]
     useAppStore.getState().setFrames(frames)
     render(<Chart cursorTime={34.5} />)
-    expect(lastOption().xAxis).toMatchObject({ min: 15, max: 35 })
+    expect(lastOption().xAxis).toMatchObject({ min: 35 - AUDIO_WINDOW_SECONDS, max: 35 })
     act(() => useAppStore.getState().setConfig({ audioRetentionSeconds: 5 }))
     expect(lastOption().xAxis).toMatchObject({ min: 30, max: 35 })
     expect(series('__cursor').markLine.data).toEqual([{ xAxis: 34.5 }])
@@ -236,7 +236,7 @@ describe.each([false, true])('shared chart timeline, portrait=%s', portrait => {
     { lastTime: 0, expected: { min: 0, max: 1 } },
     { lastTime: 2, expected: { min: 0, max: 2 } },
     { lastTime: 10, expected: { min: 0, max: 10 } },
-    { lastTime: 20, expected: { min: 0, max: 20 } },
+    { lastTime: 20, expected: { min: 20 - AUDIO_WINDOW_SECONDS, max: 20 } },
     { lastTime: 35, expected: { min: 35 - AUDIO_WINDOW_SECONDS, max: 35 } },
   ])('uses the same visible time window ending at $lastTime seconds across three charts', ({ lastTime, expected }) => {
     setMatchMedia(portrait)

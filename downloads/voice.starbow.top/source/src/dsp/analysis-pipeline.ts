@@ -11,6 +11,7 @@ import type { VadOptions } from './vad'
 import { FormantSmoother } from './formant-smoother'
 import type { SmootherFrame } from './formant-smoother'
 import { RegisterDetector } from './register-detector'
+import type { RegisterOptions } from './register-detector'
 import { AUDIO_SAMPLE_RATE, ANALYSIS_HOP_SECONDS } from '../config/audioLimits'
 
 const TARGET_RATE = AUDIO_SAMPLE_RATE
@@ -28,6 +29,7 @@ export interface PipelineOptions {
   frameOffset?: number
   formantSmoothing?: boolean
   formantSmoothingWindow?: number
+  registerOptions?: RegisterOptions
 }
 
 export class AnalysisPipeline {
@@ -51,6 +53,7 @@ export class AnalysisPipeline {
     frameOffset = 0,
     formantSmoothing = true,
     formantSmoothingWindow = 5,
+    registerOptions,
   }: PipelineOptions = {}) {
     this._frameOffset = frameOffset
     const threshold = vadThreshold ?? vadOptions?.threshold ?? DEFAULT_VAD_OPTIONS.threshold
@@ -62,11 +65,15 @@ export class AnalysisPipeline {
     })
     this._formantMethod = formantMethod
     this._smoother = formantSmoothing ? new FormantSmoother(formantSmoothingWindow) : null
-    this._registerDetector = new RegisterDetector()
+    this._registerDetector = new RegisterDetector(registerOptions)
     this.onFrame = onFrame ?? null
   }
 
   get frameCount(): number { return this._frameCount }
+
+  setRegisterOptions(options?: RegisterOptions): void {
+    this._registerDetector = new RegisterDetector(options)
+  }
 
   pushChunk(samples: Float32Array, inputSampleRate: number): void {
     if (!this._frameProcessor) {
@@ -199,6 +206,7 @@ export class AnalysisPipeline {
     formantMethod: FormantMethodValue,
     formantSmoothing: boolean = true,
     formantSmoothingWindow: number = 5,
+    registerOptions?: RegisterOptions,
   ): SmootherFrame[] {
     if (samples.length === 0) return []
     const frames: SmootherFrame[] = []
@@ -207,6 +215,7 @@ export class AnalysisPipeline {
       formantMethod,
       formantSmoothing,
       formantSmoothingWindow,
+      registerOptions,
     })
     pipeline.pushChunk(samples, sampleRate)
     pipeline.flush()

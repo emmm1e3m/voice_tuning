@@ -1,0 +1,102 @@
+.figure { margin: 0; min-width: 0; color: var(--text-soft, #5f6b7a); }
+.svg { display: block; width: 100%; height: auto; overflow: visible; }
+.svg path { stroke-linejoin: round; stroke-linecap: round; }
+.skin { stroke: #bda99f; stroke-width: 1.6; }
+.cranialSection { fill: #eeebe7; stroke: #dbd3cc; stroke-width: 1.1; }
+.bone, .maxilla { stroke: #ae9d7e; stroke-width: 1.45; }
+.bone[data-focused='true'] { stroke: #b47591; stroke-width: 2.3; }
+.boneTexture { stroke: none; }
+.boneDetail { fill: none; stroke: #bdaf98; stroke-width: .9; }
+.sinus { fill: #f7f5ef; stroke: #c0b29b; stroke-width: 1; }
+.spinalCord { fill: none; stroke: #c8bcb0; stroke-width: 8; }
+.disc { fill: #d3d7d0; stroke: #b3beb8; stroke-width: .8; }
+.pharynxMuscle { fill: none; stroke: #dcc0b6; stroke-width: 8; }
+.nasal { fill: #f6f3ed; stroke: #ba9f99; stroke-width: 1.6; }
+.nasalFloor { fill: none; stroke: #c1aaa0; stroke-width: 1.6; }
+.conchae { fill: #dec0b7; stroke: #ba9790; stroke-width: 1; }
+.conchae .conchaRidge { fill: none; stroke: #c4a098; stroke-width: 1; }
+.septum { fill: #e9e5dc; fill-opacity: .35; stroke: #bdc1bd; stroke-width: .8; pointer-events: none; }
+.nasalCartilage { fill: none; stroke: #b5bfb6; stroke-width: 2.2; }
+.airway { stroke: #bfd1d7; stroke-width: 1.1; }
+.pharynxWall { fill: none; stroke: #bca39b; stroke-width: 2; }
+.palateEdge { fill: none; stroke: #bb9593; stroke-width: 3; }
+.softPalate { fill: #d6a2a3; stroke: #b7848e; stroke-width: 1.3; }
+.uvula { fill: #d6a2a3; stroke: #b7848e; stroke-width: 1.2; }
+.teeth { fill: #fffef6; stroke: #b7af98; stroke-width: 1.1; }
+.toothRoot { fill: #f2ead7; stroke: #c4b89b; stroke-width: .9; }
+.upperLip, .lowerLip { fill: none; stroke: #b97f85; stroke-width: 4; }
+.upperLip[data-focused='true'], .lowerLip[data-focused='true'] { stroke: #648eac; stroke-width: 5; }
+.lipMucosa { fill: none; stroke: #d2a29c; stroke-width: 2; }
+.tongue { stroke: #ad727d; stroke-width: 1.65; }
+.tongue[data-focused='true'] { stroke: #aa6286; stroke-width: 2.3; }
+.tongueFibers { fill: none; stroke: #ad737b; stroke-width: .9; opacity: .5; pointer-events: none; }
+.tongueFibers .tongueFiberSecondary { stroke: #edc7bd; stroke-width: 1.5; opacity: .7; }
+.tongueFibers .tongueSurface { stroke: #f4d9cb; stroke-width: 1.2; opacity: .65; }
+.floorMuscle { stroke: #be918d; stroke-width: 1; }
+.floorDetail { fill: none; stroke: #ad817e; stroke-width: .9; opacity: .65; }
+.chinContour { fill: none; stroke: #d6b6a5; stroke-width: 2; }
+.strapMuscle { stroke: #c3a59b; stroke-width: 1; }
+.strapFibers { fill: none; stroke: #b78c88; stroke-width: .8; opacity: .55; }
+.hyoid { stroke: #aa9979; stroke-width: 1.3; }
+.hyoidMembrane { fill: none; stroke: #cec4ac; stroke-width: 2; }
+.epiglottis { fill: #c8d0b9; stroke: #929e86; stroke-width: 1.25; }
+.esophagus { fill: #e6d0c6; stroke: #bca196; stroke-width: 1.3; }
+.esophagusLumen { fill: none; stroke: #fbf5ea; stroke-width: 2.5; }
+.larynxWall { fill: #d9beb6; stroke: #b2988c; stroke-width: 1.25; }
+.larynxLumen { fill: #e5f1f6; stroke: #bcced3; stroke-width: .8; }
+.arytenoid { stroke: #91a49b; stroke-width: 1.1; }
+.thyroidCartilage { stroke: #8c9e95; stroke-width: 1.4; }
+[data-focused='true'] > .thyroidCartilage { stroke: #718e87; stroke-width: 2.2; }
+.cartilageDetail { fill: none; stroke: #e9efdf; stroke-width: 1.3; }
+.vocalPlane { fill: none; stroke: #9a7d93; stroke-width: 1.8; stroke-dasharray: 3 2; }
+.cricoid { stroke: #91a49b; stroke-width: 1.1; }
+.trachea { fill: none; stroke: #a7bdbb; stroke-width: 2.8; }
+.trachealRing { fill: #d5e0db; stroke: #9fb4ac; stroke-width: .95; }
+.flow { fill: none; stroke: #5a97b0; stroke-width: 1.85; stroke-dasharray: 4 6; pointer-events: none; }
+.motion { fill: none; stroke: #876ca5; stroke-width: 1.5; pointer-events: none; }
+.annotation text { fill: #56616d; font: 19px var(--font-sans, sans-serif); letter-spacing: .4px; }
+.leader { fill: none; stroke: #a6a8af; stroke-width: .9; pointer-events: none; }
+.leaderHit { fill: none; stroke: transparent; stroke-width: 14; pointer-events: stroke; }
+.annotation[data-highlighted='true'] text { fill: #80669e; font-weight: 650; }
+.annotation[data-highlighted='true'] .leader { stroke: #9278b2; stroke-width: 1.8; }
+.region, .annotation { transition: opacity .12s, filter .12s; }
+.region[data-highlighted='true'] { filter: drop-shadow(0 0 2.5px #9b82b54d); opacity: 1; }
+.region[data-highlighted='true'] :is(.bone, .maxilla, .nasal, .softPalate, .uvula, .tongue, .floorMuscle, .thyroidCartilage, .hyoid, .epiglottis, .esophagus, .larynxWall, .cricoid) { stroke: #8c70aa; stroke-width: 2.3; }
+.region[data-highlighted='true'] :is(.pharynxWall, .trachea, .vocalPlane) { stroke: #8c70aa; stroke-width: 3; }
+.conchae[data-highlighted='true'] > path { stroke: #8c70aa; stroke-width: 1.8; }
+.region[data-highlighted='true'] :is(.upperLip, .lowerLip) { stroke: #916fa1; stroke-width: 5; }
+.region[data-highlighted='true'] .trachealRing { stroke: #8c70aa; stroke-width: 1.6; }
+.context { pointer-events: none; }
+.orientation { fill: #92949b; font: 13px var(--font-sans, sans-serif); }
+.orientation path { stroke: #e0e0e4; stroke-width: .9; }
+.magnification { fill: none; stroke: #bdb1c7; stroke-width: .9; stroke-dasharray: 3 5; pointer-events: none; }
+.inset > rect { fill: #fdfcfc; stroke: #e2dde5; stroke-width: 1; }
+.insetTitle { fill: #756876; font: 15px var(--font-sans, sans-serif); font-weight: 600; }
+.insetSmall { fill: #847d88; font: 16px var(--font-sans, sans-serif); }
+.insetCartilage { stroke: #9aaca5; stroke-width: 1.3; }
+.vestibule { fill: #e9cfc4; stroke: #c3a898; stroke-width: 1; }
+.insetEpiglottis { fill: #cdd6b7; stroke: #a8b192; stroke-width: 1; }
+.falseFold { fill: #dcb4ab; stroke: #c59b94; stroke-width: .8; }
+.glottis { fill: #7698a5; stroke: #6e8a93; stroke-width: .8; }
+.trueFoldUnderlay { fill: none; stroke: #bda98e; stroke-width: 8; }
+.trueFold { fill: none; stroke: #fbf4df; stroke-width: 5; }
+.trueFold[data-focused='true'] { stroke: #fff8e3; stroke-width: 5.5; }
+.insetArytenoid { fill: #c3cfbf; stroke: #8eaa9b; stroke-width: .9; }
+.insetLeader { fill: none; stroke: #a9a5ac; stroke-width: .8; }
+.inset[data-highlighted='true'] .trueFoldUnderlay { stroke: #8c70aa; stroke-width: 9; }
+.inset[data-highlighted='true'] .insetLeader { stroke: #9278b2; stroke-width: 1.4; }
+.inset[data-highlighted='true'] :is(.insetTitle, .insetSmall) { fill: #80669e; font-weight: 600; }
+.legend { fill: #8a8590; font: 12.5px var(--font-sans, sans-serif); }
+.figure figcaption { margin: 0 16px 12px; color: #908b92; font-size: calc(9px * var(--font-scale, 1)); line-height: 1.7; text-align: center; }
+.mobileInset { display: none; }
+.region[data-relevant='false']:not([data-highlighted='true']), .annotation[data-relevant='false']:not([data-highlighted='true']) { filter: grayscale(1); opacity: .5; }
+.figure:not([data-focus='all']) .context { filter: grayscale(1); opacity: .55; }
+.figure:not([data-focus='all']) .skin { filter: grayscale(1); opacity: .65; }
+@media (max-width: 600px) {
+  .annotation text { font-size: 25px; }
+  .insetTitle { font-size: 21px; }
+  .insetSmall { font-size: 17px; }
+  .desktopInset, .magnification { display: none; }
+  .mobileInset { display: block; width: 220px; max-width: 90%; height: auto; margin: -8px auto 12px; }
+  .figure figcaption { margin: 4px 12px 12px; }
+}

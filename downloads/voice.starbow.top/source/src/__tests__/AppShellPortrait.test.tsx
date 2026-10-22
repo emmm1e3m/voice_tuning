@@ -77,7 +77,7 @@ describe('AppShell toolbar density', () => {
     expect(screen.queryByRole('menu')).toBeNull()
   })
 
-  it('opens the foreword from More without requesting microphone permission', () => {
+  it('opens quick start from More without requesting microphone permission', () => {
     setMatchMedia(true)
     const getUserMedia = vi.fn()
     Object.defineProperty(navigator, 'mediaDevices', { configurable: true, value: { getUserMedia } })
@@ -85,26 +85,26 @@ describe('AppShell toolbar density', () => {
     expect(screen.queryByRole('dialog')).toBeNull()
     fireEvent.click(screen.getByRole('button', { name: '更多操作' }))
     fireEvent.click(screen.getByRole('menuitem', { name: /帮助/ }))
-    expect((screen.getByRole('combobox', { name: '选择教程章节' }) as HTMLSelectElement).value).toBe('foreword')
-    expect(screen.getByText('为什么练习声音女性化')).toBeTruthy()
+    expect((screen.getByRole('combobox', { name: '选择帮助主题' }) as HTMLSelectElement).value).toBe('quick-start')
+    expect(screen.getByRole('heading', { name: '录下第一句声音' })).toBeTruthy()
     expect(getUserMedia).not.toHaveBeenCalled()
     fireEvent.click(screen.getByRole('button', { name: '关闭' }))
     expect(document.activeElement).toBe(screen.getByRole('button', { name: '更多操作' }))
   })
 
-  it('clears the real portrait feedback through the dock action', () => {
+  it('clears the portrait chart through the dock action', () => {
     setMatchMedia(true)
     useAppStore.getState().setFrames([
       { time: 1, f0: 300, f1: 700, f2: 1200, register: 'mixed' },
     ])
     renderShell(<AnalysisPage />)
     expect(screen.getByLabelText('声区背景图例')).toBeTruthy()
-    expect(screen.getByTestId('hero-col-f0').textContent).toContain('↑')
+    expect(screen.queryByRole('region', { name: '实时反馈' })).toBeNull()
+    expect(screen.getByTestId('window-f0').textContent).toBe('300Hz')
     fireEvent.click(screen.getByRole('button', { name: '清除图谱' }))
     expect(screen.getByLabelText('声区背景图例')).toBeTruthy()
     expect(screen.getByRole('checkbox', { name: '声区' })).toBeTruthy()
-    expect(screen.getByTestId('hero-f0').textContent).toBe('--')
-    expect(screen.getByTestId('hero-col-f0').textContent).not.toMatch(/[↑↓]/)
+    expect(screen.queryByTestId('feedback-hero')).toBeNull()
     expect(useAppStore.getState().frames).toEqual([])
   })
 })

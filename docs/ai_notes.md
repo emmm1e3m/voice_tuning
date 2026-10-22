@@ -2,32 +2,45 @@
 
 更新：2026-10-22。
 
-## 已确认的实现与边界
+## 维护入口
 
-- 独立仓库 origin=https://github.com/emmm1e3m/voice_tuning.git；main；upstream 只读。源码 downloads/voice.starbow.top/source；HashRouter；生产命令 npm run build -- --base=/voice_tuning/。Git认证由仓库显式配置的 Windows Git Credential Manager 提供。
-- AnatomyExplorer 在同一面板联动六个普通话元音的解剖基准、六个部位动作、F0/F1/F2 数字和 AnatomySpectrum 强度—频率图。部位选择按钮配一个滑块，反馈紧邻控件，避免滚动导致无法对照。
-- anatomyAcoustics 的参考数值取 VOWEL_PRESETS 中心；每个元音的结构位置单独定义。频率位移是相对所选元音的教学指数模型，不是生理预测；F0只随声源控制变化，F1/F2取决于声道控制。e按普通话后部不圆唇，ü按前高圆唇。
-- AnatomySpectrum 用两个钟形峰演示 F1/F2 包络；F0用于当前泛音间距，并分别标出参考和当前F0。纵轴为相对强度，非实测声压级。
-- FormantChart 为主页面唯一时间—频率图。registerSegments 按时间中点合并同声区帧；静音、无效F0、未知值和长缺口留白。__register 背景独立于三条曲线显隐，低透明着色。showRegister 与 frequencyScale 在 chartDisplayStore 持久化。
-- 移除 FeedbackCard/FeedbackHero 独立声区行；RegisterLegend 与 FrequencyScaleControl 的说明承接含义。移动端只隐藏轴描述文本，不隐藏新增 Tip。
-- TargetPresetBar 默认展开；TargetRecommendationControl 在桌面/手机共享。推荐模式用元音独立参考，不由F0反推F1/F2。手改F1/F2转manual；切元音保留F0；manual改F0不覆盖共振峰。
-- appStore 保存 targetMode/activePreset/bands 及逐元音覆盖，merge校验并迁移旧自定义为manual；真实persist.rehydrate回归覆盖推荐与手动。targetBandRules固定半宽40/100/150Hz及有序中心约束保持。
-- helpContent增加foreword为16章中第一章；manual 3/4从quick-start移入。AppShell普通帮助默认foreword，明确的上手入口仍打开quick-start。AboutModal对齐根README四个来源链接；LearningStrip添加主要结构；ConfigDrawer介绍混合算法与生效时机。
+- 源码：`downloads/voice.starbow.top/source`；HashRouter；Pages 构建使用 `npm run build -- --base=/voice_tuning/`。
+- 已现场确认本目录为独立 Git 仓库，当前分支 main，origin 为 `https://github.com/emmm1e3m/voice_tuning.git`；upstream 的 push URL 为 DISABLED。读取远端及推送 dry-run 成功。以当前 Git 检查为准。
+- 使用现有 npm 工具链。根目录「启动练习器.cmd」调用 `scripts/start.ps1`；依赖锁缓存为 `node_modules/.voice-tuning-package-lock.json`。
+- 必要验证：`npm test -- --testTimeout=15000`、`npx tsc --noEmit`、带 Pages base 的生产构建。当前结果以 `docs/validation-results.json` 为准。
 
-## 验证方法与维护入口
+## 页面与内容边界
 
-- 必须运行完整 npm test -- --testTimeout=15000、npx tsc --noEmit、npm run build -- --base=/voice_tuning/。最新结果摘要在docs/validation-results.json，原始本机输出为source/test-results.json与test-run.log（均不提交）。
-- 生产本地预览也必须指定 --base=/voice_tuning/，与构建一致；否则默认预览配置会使前缀资源返回404，不能据此判断Pages发布错误。
-- 本机Playwright通过bundled playwright的CommonJS入口加载；直接import其ESM入口在本环境出现default export错误。浏览器定位器默认4秒超时，避免长等待重置REPL。
-- Vite读取ECharts实例时复用performance资源列表中的实际echarts.js查询URL，避免重复模块。UI签核通过实际点击/键盘/文件选择；evaluate仅作状态读取。
-- 忠实保留UTF-8与原行尾；部分Windows写入会把LF改CRLF，最终对照HEAD恢复，git diff --check应干净。
-- 平滑默认5帧、保留20s；appConfig限制1–30帧/5–120s，RingBuffer.resize保留最新数据。旧轮已验证13.163s样本和缩至5s的WAV导出，本次只对改动相关流程重新签核。
+- 五页依次为声音分析、音高参考、统计分析、交互演示、教学文档；统计路由为 `#/statistics`。统计与两条学习路由懒加载，路由内部 Suspense 保持 AppShell 挂载。
+- 主分析与音高参考共用音频；进入统计页时调用 `suspend()` 停止实时录音及播放，保留已有分析数据。`StatisticsSessionProvider` 挂在 AppShell，统计录音独立限60秒，可暂停、继续、完成分析或导入；切页暂停并保留草稿及最近报告，刷新或关闭应用清除。录制及分析新片段期间隐藏旧报告，取消后恢复。
+- 统计功能参考 `JPs-git/voice-builder` 的 `5c4483fff0cdf25cccd4e3b2d8d5834382b80457` 行为，使用本项目现有DSP独立实现；Worker仅处理F0，不引入F1/F2或声区统计。
+- `src/statistics/materials.ts` 提供中文、英文各两段原创朗读材料。统计报告显示整段有效F0的中位数、P10/P90及分布，纳入60–500Hz，高于500Hz部分剔除另报；有效发声不足3秒显示不足，3–10秒提示样本较短。
+- HelpDrawer 仅提供程序使用说明，默认 quick-start；教学文档按原文七章独立加载，默认 introduction 从目录正文开始。保留正文、练习、表格及26个图位，用 chapter/section 查询参数保存阅读位置。
+- 手册关键概念使用阅读注及就近校注解释。会厌独立于舌骨；咽分鼻咽、口咽、喉咽；肺供气，周期嗓音声源为声带；F2不能唯一反推喉位，HNR方向和Twang健康表述已有校正。F0训练从舒适音域轻柔滑音逐步过渡到短音节、短句与日常说话，保留自然起伏；180Hz或换声点不作为统一必达线，声嘶或疲劳时休息。
+- 原始手册及图像保留为校对依据。26 个图位中15个以代码重绘，11个Praat操作与练习图保留真实截图并可查看原尺寸。代码图按声道、喉部、频谱和元音空间维护，不能将实测谱图替换成虚构数据；男女VSA图共用坐标尺度。
+- F0 一节延续原文面向读者、循序讲解的语气；正文仅保留引用编号，新增专业来源接续原有条目，统一放在最后的参考文献章。
+- `source/scripts/manual_chart_digitize*.py` 用于从原图重新生成灰度与轨迹数据；日常启动与构建不依赖Python。原理与感知部分的五张频谱矩阵按需加载，手机多坐标轴图在组件内横滚。
+- 界面共享12/13/14/16px字号，页面标题32px、章节标题22px；全局font-scale为1。各页面h1共用 `.page-title` 的 `var(--text)` 实色、650字重及行高，手机22px，不在各页重复声明颜色或透明度。
 
-## 科学资料
+## 交互模型
 
-- USC：https://sail.usc.edu/~lgoldste/General_Phonetics/Source_Filter/SFc.html
-- UNSW：https://www.phys.unsw.edu.au/jw/voice.html
-- Oxford：https://www.phon.ox.ac.uk/jcoleman/AcousticPhonetics2.pdf
-- Lammert与Narayanan：https://pmc.ncbi.nlm.nih.gov/articles/PMC4503663/
+- `anatomyAcoustics.ts` 是六部位与 F0/F1/F2 的统一连续教学模型，相同位置产生相同结果；元音基准由练习预设中心求解，不再叠加逐元音偏移。
+- `AnatomyExplorer` 保存唯一 position 状态，六滑块常显；桌面上方为结构图与两列三行滑块及读数，下方元音空间与频谱等宽并列，手机纵向排列。`VowelMap` 为受控视图，拖动实心点通过逆解协调舌高、下颌、舌前后，保留喉位、唇形与声带调节。边界显示真实可达结果，图点不能脱离声道状态。
+- 界面使用「声带调节」，端点为「较低音高／较高音高」；内部tension字段保留，是纵向伸展、刚度和有效振动组织的合并教学参数。模型F0仅随该参数变化；实际发声由环甲肌、甲杓肌等协调调节，不能用声带长度或用力程度单独推算。舌高通常反向影响F1，下颌开度正向影响F1，舌前移通常提高F2；喉位升高和圆唇分别使多个共振峰趋高、趋低。模型用于方向演示。
+- `isAnatomyPartRelevant` 供控件和解剖图共用：声带调节→F0；喉位→F1/F2；舌前后→F2；舌高→F1；圆唇→F1/F2；下颌→F1。选择频率后无关项灰显，仍可调整；全部部位恢复配色。
+- `AnatomySpectrum` 的两个峰为教学包络，泛音间距由F0决定；纵轴为相对强度。普通话 e 使用 /ɤ/，ü 使用 /y/，不把声学空间等同于单纯舌位图。
+- `VocalTractDiagram` 同时服务交互页与教学文档，保留完整圆颅顶、后脑和枕颈过渡；悬停部位显示名称与引线。气管位于食管前、舌体连接口底、口元音软腭关闭鼻咽，成对声带放在独立俯视图。元音点使用指针拖动。
 
-声带振动与声道共振分开解释；舌高与F1通常反向，舌前移通常提高F2，圆唇/延长声道通常降低共振。保留典型方向和教学参数的边界。
+## 既有声音分析功能
+
+- 主页面窗口三卡显示有效频率中位数与目标中心。唯一时间—频率图显示三条频率、目标带和单层贯穿图高的竖直声区时间背景；静音、无效值与长缺口留白。曲线显隐不影响声区背景，声区开关与频率坐标保存偏好。
+- 个人声区校准位于「配置 → 声区校准」，配置内可直接开始/停止录音，再采集1.2秒稳定的真假音转换边界声，以H2–H10中相对基频峰衰减不足阈值的谐波峰数量设置边界；支持重新采样、取消采样及恢复默认。关闭配置取消未完成采样，录音可继续。校准保存到独立store，录音后续帧与之后导入使用该边界；比较需相近音高、元音、响度及麦克风位置，跨大音域或换设备重新校准。F1/F2不作为谐波数量。
+- 「目标频率设置」的「随F0推荐」取手册成年男女两档元音共振峰区间中点，按F0连续插值，锚点外同斜率延伸；这是参考档位映射。切元音保留F0，手改F1/F2进入manual，manual改F0不覆盖共振峰。初始化与重置同用推荐函数，目标半宽固定40/100/150Hz。
+- 默认平滑5帧、保留10秒，可设1–30帧与5–120秒。缩短窗口舍弃早期音频；WAV导出为保留窗口。
+
+## 参考
+
+- https://sail.usc.edu/~lgoldste/General_Phonetics/Source_Filter/SFc.html
+- https://www.phys.unsw.edu.au/jw/voice.html
+- https://www.phon.ox.ac.uk/jcoleman/AcousticPhonetics2.pdf
+- https://pmc.ncbi.nlm.nih.gov/articles/PMC4503663/

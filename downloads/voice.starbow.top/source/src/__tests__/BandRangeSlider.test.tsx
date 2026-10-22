@@ -17,7 +17,7 @@ describe('single center slider', () => {
     const thumb = screen.getByRole('slider', { name: 'F1中心滑杆' })
     expect(screen.getAllByRole('slider')).toHaveLength(1)
     expect(thumb.getAttribute('aria-valuemin')).toBe('100')
-    expect(thumb.getAttribute('aria-valuemax')).toBe('2500')
+    expect(thumb.getAttribute('aria-valuemax')).toBe('2193')
     expect(thumb.getAttribute('aria-valuenow')).toBe('330')
   })
   it('supports arrow and page keys while preserving decimal centers', () => {
@@ -63,7 +63,7 @@ describe('single center slider', () => {
     const f2 = useAppStore.getState().bands.f2
     render(<BandRangeSlider bandKey="f1" value={330} onChange={change} onBoundary={vi.fn()} />)
     fireEvent.keyDown(screen.getByRole('slider'), { key: 'End' })
-    expect(change).toHaveBeenCalledWith(2500)
+    expect(change).toHaveBeenCalledWith(2193)
     expect(useAppStore.getState().bands.f2).toBe(f2)
   })
 })

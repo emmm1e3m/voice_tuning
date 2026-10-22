@@ -32,7 +32,7 @@ describe('config persistence and audio retention', () => {
     localStorage.setItem('voicebuilder-presets', JSON.stringify({ state: { presetOverrides: [] }, version: 0 }))
     await useAppStore.persist.rehydrate()
     expect(useAppStore.getState().config).toEqual(DEFAULT_CONFIG)
-    expect(recordingBuffer.capacity).toBe(20 * AUDIO_SAMPLE_RATE)
+    expect(recordingBuffer.capacity).toBe(DEFAULT_CONFIG.audioRetentionSeconds * AUDIO_SAMPLE_RATE)
   })
 
   it('shrinks audio and frames together, then expands without inventing discarded data', () => {

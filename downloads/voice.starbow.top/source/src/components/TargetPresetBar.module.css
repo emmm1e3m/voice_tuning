@@ -3,28 +3,32 @@
 .summary::-webkit-details-marker { display: none; }
 .summary:hover { background: var(--primary-soft); }
 .summary:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
-.label { flex: 1; min-width: 0; font-size: calc(12px * var(--font-scale)); color: var(--text); font-weight: 650; line-height: 1.6; }
-.currentVowel { flex-shrink: 0; font-size: calc(10px * var(--font-scale)); color: var(--primary); padding: 3px 6px; background: var(--primary-soft); border-radius: 6px; white-space: nowrap; }
+.label { flex: 1; min-width: 0; font-size: var(--heading-card); color: var(--text); font-weight: 650; line-height: var(--leading-body); }
+.currentVowel { flex-shrink: 0; font-size: var(--text-xs); color: var(--primary); padding: 3px 6px; background: var(--primary-soft); border-radius: 6px; white-space: nowrap; }
 .disclosure { flex-shrink: 0; color: var(--text-soft); transform: rotate(135deg); transition: transform .15s ease; }
 .bar[open] .disclosure { transform: rotate(315deg); }
-.body { display: flex; flex-direction: column; gap: 14px; padding: 0 14px 14px; }
+.body { display: flex; flex-direction: column; gap: 8px; padding: 0 14px 14px; }
 .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; border-top: 1px solid var(--border); padding-top: 10px; }
-.bodyLabel { color: var(--text-soft); font-size: calc(11px * var(--font-scale)); }
-.vowels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-.vowelBtn { height: 28px; padding: 0 6px; font: 600 calc(12px * var(--font-scale)) var(--font-sans); color: var(--text); background: #fff; border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; transition: background .15s ease, border-color .15s ease; }
+.bodyLabel { color: var(--text-soft); font-size: var(--text-xs); }
+.vowels { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+.vowelBtn { height: 28px; padding: 0 6px; font: 600 var(--text-xs) var(--font-sans); color: var(--text); background: #fff; border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; transition: background .15s ease, border-color .15s ease; }
 .vowelBtn:hover { background: #f9fafb; border-color: var(--border-strong); }
 .vowelBtnActive { background: var(--primary-soft); border-color: var(--primary); color: var(--primary); }
 .vowelBtn:focus-visible { outline: 2px solid var(--info); outline-offset: 2px; }
 .resetIcon { display: inline-flex; align-items: center; justify-content: center; background: none; border: none; color: var(--text-soft); cursor: pointer; padding: 5px; border-radius: var(--radius-sm); transition: color .15s ease; }
 .resetIcon:hover { color: var(--primary); background: var(--primary-soft); }
 .resetIcon:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
-.inputs { display: flex; flex-direction: column; gap: 10px; border-top: 1px dashed var(--border); padding-top: 12px; }
-.bandGroup { display: flex; flex-direction: column; gap: 8px; }
+.inputs { display: flex; flex-direction: column; gap: 8px; border-top: 1px dashed var(--border); padding-top: 12px; }
+.bandGroup { display: flex; flex-direction: column; gap: 4px; }
 .bandGroup:has([data-band="f0"]) { --band-color: var(--c-f0); }
 .bandGroup:has([data-band="f1"]) { --band-color: var(--c-f1); }
 .bandGroup:has([data-band="f2"]) { --band-color: var(--c-f2); }
-.bandHeading { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--text-soft); font-size: calc(11px * var(--font-scale)); }
-.hint { font-size: calc(10px * var(--font-scale)); color: var(--text-mute); margin: 0; line-height: 1.8; }
+.bandHeading { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--text-soft); font-size: var(--text-xs); }
+.hint { font-size: var(--text-xs); color: var(--text-mute); margin: 0; line-height: var(--leading-body); }
+@media (min-width: 769px) {
+  .bar[open] { height: var(--analysis-card-height); overflow: hidden; }
+  .bar[open] .body { max-height: calc(var(--analysis-card-height) - 58px); overflow-y: auto; }
+}
 @media (max-width: 768px) {
   .bar { flex: 1; min-width: 0; }
   .summary { padding: 10px; }

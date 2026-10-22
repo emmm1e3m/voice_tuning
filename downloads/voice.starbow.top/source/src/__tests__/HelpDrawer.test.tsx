@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import { HelpDrawer } from '../components/HelpDrawer'
-import { getHelpSections, type HelpTopic } from '../content/helpContent'
+import type { HelpTopic } from '../content/helpContent'
 import { Modal } from '../components/Modal'
 
 function Harness({ initial = 'quick-start' }: { initial?: HelpTopic }) {
@@ -17,7 +17,16 @@ function matchMedia() {
   return (matches: boolean) => act(() => { mql.matches = matches; listeners.forEach(listener => listener({ matches })) })
 }
 
-describe('integrated manual tutorial', () => {
+describe('program help', () => {
+  it('opens statistics guidance from the help directory', () => {
+    matchMedia()
+    render(<Harness />)
+    fireEvent.click(screen.getByRole('button', { name: '打开帮助' }))
+    fireEvent.click(within(screen.getByRole('navigation', { name: '帮助目录' })).getByRole('button', { name: '统计分析' }))
+    expect(screen.getByRole('heading', { name: '统计分析' })).toBeTruthy()
+    expect(screen.getByRole('heading', { name: '中位数、P10/P90 与音高分布' })).toBeTruthy()
+    expect(screen.getByText(/统计只纳入 60–500 Hz/)).toBeTruthy()
+  })
   it('places an interactive time-frequency example directly in the chart-reading chapter', () => {
     matchMedia()
     render(<Harness initial="charts" />)
@@ -25,27 +34,9 @@ describe('integrated manual tutorial', () => {
     const heading = screen.getByRole('heading', { name: '一张图看 F0、F1、F2' })
     const firstSection = heading.closest('section')!
     expect(within(firstSection).getByRole('figure', { name: 'F0、F1、F2 读图示例' })).toBeTruthy()
-    expect(within(firstSection).getByText(/关键实时反馈始终显示/)).toBeTruthy()
+    expect(within(firstSection).getByText(/图内游标仍可查看频率与声区/)).toBeTruthy()
     fireEvent.click(within(firstSection).getByRole('button', { name: 'F0 示例曲线' }))
     expect(within(firstSection).queryByTestId('example-curve-f0')).toBeNull()
-  })
-  it.each(['anatomy', 'source-filter', 'perception'] as const)('keeps every %s review answer closed until its question is selected', topic => {
-    matchMedia()
-    render(<Harness initial={topic} />)
-    fireEvent.click(screen.getByRole('button', { name: '打开帮助' }))
-    const questions = getHelpSections(topic, 'landscape').flatMap(section => [...(section.questions ?? [])])
-    const details = [...document.querySelectorAll<HTMLDetailsElement>('details[data-review-question]')]
-    expect(details.length).toBe(questions.length)
-    for (const [index, item] of questions.entries()) {
-      expect(details[index].open).toBe(false)
-      expect(details[index].querySelector('summary')?.textContent).toContain(item.question)
-      expect(details[index].querySelector('p')?.textContent).toBe(item.answer)
-    }
-    fireEvent.click(details[0].querySelector('summary')!)
-    expect(details[0].open).toBe(true)
-    expect(details.slice(1).every(item => !item.open)).toBe(true)
-    fireEvent.click(details[0].querySelector('summary')!)
-    expect(details[0].open).toBe(false)
   })
   it('uses latest fallback for a connected trigger hidden with display:none', () => {
     function Probe() {
@@ -70,44 +61,41 @@ describe('integrated manual tutorial', () => {
     trigger.focus(); fireEvent.click(trigger)
     const dialog = screen.getByRole('dialog', { name: '使用说明' })
     expect(document.activeElement).toBe(dialog)
-    fireEvent.click(within(screen.getByRole('navigation', { name: '教程目录' })).getByRole('button', { name: '训练目标' }))
+    fireEvent.click(within(screen.getByRole('navigation', { name: '帮助目录' })).getByRole('button', { name: '训练目标' }))
     expect(screen.getByRole('table', { name: /默认目标中心/ })).toBeTruthy()
     fireEvent.keyDown(dialog, { key: 'Escape' })
     expect(screen.queryByRole('dialog')).toBeNull()
     expect(document.activeElement).toBe(trigger)
   })
-  it('includes real F2 exercises, original illustrations and related anatomy without a source detour', () => {
+  it('keeps operation help separate from the manual and interactive demonstration', () => {
     matchMedia()
     render(<Harness initial="f2" />)
     fireEvent.click(screen.getByRole('button', { name: '打开帮助' }))
-    expect(screen.getByRole('heading', { name: 'F2 的机制：喉位、舌位与唇形' })).toBeTruthy()
-    expect(screen.getByRole('img', { name: /wow 训练中/ })).toBeTruthy()
-    expect(screen.getByRole('img', { name: '大狗小狗训练' })).toBeTruthy()
-    fireEvent.click(screen.getByText('查看相关发声部位'))
-    fireEvent.click(screen.getByRole('button', { name: '舌位前后' }))
-    expect(screen.getByRole('slider', { name: /舌位前后/ })).toBeTruthy()
-    expect(screen.getByRole('link', { name: 'MTF 手册原文（离线）' }).getAttribute('href')).toMatch(/manual\/index\.html$/)
-    fireEvent.click(screen.getByRole('button', { name: /下一章 F1/ }))
-    expect(screen.getByRole('heading', { name: 'F1 的机制：开口与舌位' })).toBeTruthy()
-    expect(screen.getByRole('img', { name: /小嘴型与大嘴型发/ })).toBeTruthy()
+    expect(screen.getByRole('heading', { name: '在程序中观察 F2' })).toBeTruthy()
+    expect(screen.queryByRole('img')).toBeNull()
+    expect(screen.queryByRole('region', { name: '发声部位交互图' })).toBeNull()
+    expect(screen.getByRole('link', { name: '阅读教学文档' }).getAttribute('href')).toBe('#/manual')
+    expect(screen.getByRole('link', { name: '打开交互演示' }).getAttribute('href')).toBe('#/interactive')
+    fireEvent.click(screen.getByRole('button', { name: /下一项 F1/ }))
+    expect(screen.getByRole('heading', { name: '在程序中观察 F1' })).toBeTruthy()
   })
   it('uses a single mobile selector and preserves logical directory focus across breakpoints', () => {
     const resize = matchMedia()
     render(<Harness initial="audio" />)
     fireEvent.click(screen.getByRole('button', { name: '打开帮助' }))
-    const current = within(screen.getByRole('navigation', { name: '教程目录' })).getByRole('button', { name: '录音与导入' })
+    const current = within(screen.getByRole('navigation', { name: '帮助目录' })).getByRole('button', { name: '录音与导入' })
     current.focus()
     expect(screen.getByText(/通过顶栏「导入音频」/)).toBeTruthy()
     resize(true)
-    expect(screen.queryByRole('navigation', { name: '教程目录' })).toBeNull()
-    const selector = screen.getByRole('combobox', { name: '选择教程章节' }) as HTMLSelectElement
+    expect(screen.queryByRole('navigation', { name: '帮助目录' })).toBeNull()
+    const selector = screen.getByRole('combobox', { name: '选择帮助主题' }) as HTMLSelectElement
     expect(selector.value).toBe('audio')
     expect(document.activeElement).toBe(selector)
     expect(screen.getByText(/更多 → 导入音频/)).toBeTruthy()
-    fireEvent.change(selector, { target: { value: 'anatomy' } })
-    expect(screen.getByRole('region', { name: '发声部位交互图' })).toBeTruthy()
+    fireEvent.change(selector, { target: { value: 'f0' } })
+    expect(screen.getByRole('heading', { name: '在程序中观察 F0' })).toBeTruthy()
     resize(false)
-    expect(document.activeElement).toBe(within(screen.getByRole('navigation', { name: '教程目录' })).getByRole('button', { name: '发声部位与动作' }))
+    expect(document.activeElement).toBe(within(screen.getByRole('navigation', { name: '帮助目录' })).getByRole('button', { name: 'F0 · 音高' }))
     vi.unstubAllGlobals()
   })
 })

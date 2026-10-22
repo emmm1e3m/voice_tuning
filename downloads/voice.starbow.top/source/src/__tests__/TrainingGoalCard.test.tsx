@@ -14,7 +14,7 @@ describe('TrainingGoalCard', () => {
   it('opens the relevant learning material from each target', () => {
     const open = vi.fn()
     render(<TrainingGoalCard onOpenHelp={open} />)
-    fireEvent.click(screen.getByLabelText('F2 目标原理与练习'))
+    fireEvent.click(screen.getByLabelText('F2 目标说明'))
     expect(open).toHaveBeenCalledWith('f2')
   })
   it('commits a focused decimal center on Enter and then blurs', () => {
@@ -31,8 +31,8 @@ describe('TrainingGoalCard', () => {
     const input = screen.getByLabelText('F2目标中心')
     fireEvent.change(input, { target: { value: '800' } })
     fireEvent.blur(input)
-    expect(useAppStore.getState().bands.f2.range).toEqual([1000, 1300])
-    expect(screen.getByRole('status').textContent).toContain('1150 Hz')
+    expect(useAppStore.getState().bands.f2.range).toEqual([1015, 1315])
+    expect(screen.getByRole('status').textContent).toContain('1165 Hz')
     expect(input.getAttribute('aria-describedby')).toBe(screen.getByRole('status').id)
   })
 })

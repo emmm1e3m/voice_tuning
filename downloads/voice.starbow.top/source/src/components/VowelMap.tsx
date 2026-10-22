@@ -1,65 +1,80 @@
 import { useId, useRef, useState } from 'react'
-import type { KeyboardEvent, PointerEvent } from 'react'
+import type { CSSProperties, PointerEvent } from 'react'
+import { ANATOMY_VOWELS, anatomyFrequencies, anatomyPositionForFormants, anatomyVowelReference, type FormantPoint } from '../utils/anatomyAcoustics'
 import styles from './VowelMap.module.css'
 
-const VOWELS = [
-  { symbol: 'i', word: '衣', f1: 300, f2: 2300, action: '舌位较高、靠前，嘴唇展开。' },
-  { symbol: 'e', word: '欸', f1: 450, f2: 2000, action: '舌位前、半闭；与 i 比较开口。' },
-  { symbol: 'a', word: '啊', f1: 800, f2: 1400, action: '舌位较低，开口较大。' },
-  { symbol: 'o', word: '喔', f1: 500, f2: 900, action: '舌位靠后、半闭，嘴唇拢圆。' },
-  { symbol: 'u', word: '乌', f1: 350, f2: 800, action: '舌位较高、靠后，嘴唇拢圆。' },
-  { symbol: 'ü', word: '迂', f1: 300, f2: 1700, action: '保持 i 的前舌位，再把嘴唇拢圆。' },
-] as const
+interface VowelMapProps {
+  value?: FormantPoint
+  vowel?: string
+  onChange?: (point: FormantPoint) => void
+  onVowelChange?: (vowel: string) => void
+  embedded?: boolean
+}
 const clamp = (value: number, low: number, high: number) => Math.max(low, Math.min(high, value))
-const xFor = (f2: number) => 82 + (2800 - f2) / 2200 * 482
-const yFor = (f1: number) => 65 + (f1 - 200) / 800 * 242
+// 在动作可达范围外留出坐标边距，极限位置的拖动点仍不遮挡刻度。
+const xFor = (f2: number) => 82 + (3900 - f2) / 3700 * 514
+const yFor = (f1: number) => 50 + f1 / 1500 * 260
+const vowelSymbol = (vowel: string) => vowel === 'vowel-yu' ? 'ü' : vowel.replace('vowel-', '')
 
-export function VowelMap() {
-  const id = useId()
+export function VowelMap({ value, vowel, onChange, onVowelChange, embedded = false }: VowelMapProps = {}) {
+  const id = useId().replace(/:/g, '')
   const svgRef = useRef<SVGSVGElement>(null)
-  const [selected, setSelected] = useState(0)
-  const [point, setPoint] = useState({ f1: 300, f2: 2300 })
-  const [dragging, setDragging] = useState(false)
-  const choose = (index: number) => { setSelected(index); setPoint({ f1: VOWELS[index].f1, f2: VOWELS[index].f2 }) }
+  const dragging = useRef(false)
+  const [localVowel, setLocalVowel] = useState('vowel-i')
+  const [position, setPosition] = useState(ANATOMY_VOWELS['vowel-i'].position)
+  const selected = vowel ?? localVowel
+  const point = value ?? anatomyFrequencies(position)
+  const reference = anatomyVowelReference(selected)
+  const atReference = Math.abs(point.f1 - reference.f1) < 2 && Math.abs(point.f2 - reference.f2) < 2
+  const change = (next: FormantPoint) => {
+    if (onChange) onChange(next)
+    else setPosition(old => anatomyPositionForFormants(old, next))
+  }
+  const choose = (key: string) => {
+    if (onVowelChange) onVowelChange(key)
+    else { setLocalVowel(key); setPosition(ANATOMY_VOWELS[key].position) }
+  }
   const move = (event: PointerEvent<SVGCircleElement>) => {
     const svg = svgRef.current
-    if (!svg) return
-    const matrix = svg.getScreenCTM()
-    if (!matrix) return
+    const matrix = svg?.getScreenCTM()
+    if (!svg || !matrix) return
     const cursor = svg.createSVGPoint()
     cursor.x = event.clientX; cursor.y = event.clientY
     const local = cursor.matrixTransform(matrix.inverse())
-    setPoint({ f1: Math.round(clamp(200 + (local.y - 65) / 242 * 800, 200, 1000) / 10) * 10, f2: Math.round(clamp(2800 - (local.x - 82) / 482 * 2200, 600, 2800) / 10) * 10 })
+    change({ f1: Math.round(clamp((local.y - 50) / 260 * 1500, 150, 1400)), f2: Math.round(clamp(3900 - (local.x - 82) / 514 * 3700, 400, 3700)) })
   }
-  const keyMove = (event: KeyboardEvent<SVGCircleElement>) => {
-    const change = { ArrowLeft: [0, 50], ArrowRight: [0, -50], ArrowUp: [-25, 0], ArrowDown: [25, 0] }[event.key]
-    if (!change) return
-    event.preventDefault()
-    setPoint(old => ({ f1: clamp(old.f1 + change[0], 200, 1000), f2: clamp(old.f2 + change[1], 600, 2800) }))
-  }
-  return <section className={styles.lab} aria-label="元音 F1 F2 空间交互图">
-    <div className={styles.presets} aria-label="元音对照">{VOWELS.map((vowel, index) => <button type="button" key={vowel.symbol} aria-pressed={selected === index} onClick={() => choose(index)}>{vowel.symbol}<small>{vowel.word}</small></button>)}<button type="button" onClick={() => choose(selected)}>复位</button></div>
-    <p className={styles.action}>{VOWELS[selected].action}</p>
-    <p className={styles.scrollHint}>左右滑动查看完整元音图</p>
-    <div className={styles.plot} tabIndex={0} aria-label="元音空间，可左右滚动"><svg ref={svgRef} viewBox="0 0 640 395" role="group" aria-labelledby={`${id}-title ${id}-desc`}>
-      <title id={`${id}-title`}>元音的 F1 与 F2 空间</title><desc id={`${id}-desc`}>左侧 F2 高、右侧 F2 低；上方 F1 低、下方 F1 高。选中点可拖动，也可用方向键移动。</desc>
-      <rect x="82" y="65" width="482" height="242" rx="4" className={styles.background} />
-      {[200, 400, 600, 800, 1000].map(f1 => <g key={f1}><path className={styles.grid} d={`M82 ${yFor(f1)}H564`} /><text x="69" y={yFor(f1) + 5} textAnchor="end">{f1}</text></g>)}
-      {[2800, 2200, 1600, 1000, 600].map(f2 => <g key={f2}><path className={styles.grid} d={`M${xFor(f2)} 65V307`} /><text x={xFor(f2)} y="333" textAnchor="middle">{f2}</text></g>)}
-      <text x="82" y="28" className={`${styles.f2Text} ${styles.fullLabel}`}>← F2 较高 · 前元音</text><text x="564" y="28" textAnchor="end" className={`${styles.f2Text} ${styles.fullLabel}`}>后元音 · F2 较低 →</text>
-      <text x="82" y="28" className={`${styles.f2Text} ${styles.compactLabel}`}>前 · F2 高</text><text x="564" y="28" textAnchor="end" className={`${styles.f2Text} ${styles.compactLabel}`}>后 · F2 低</text>
-      <text x="16" y="110" className={styles.f1Text}>闭</text><text x="16" y="290" className={styles.f1Text}>开</text>
-      <text x="565" y="365" textAnchor="end">F2（Hz）</text><text x="35" y="52" className={styles.f1Text}>F1（Hz）</text>
-      {VOWELS.map((vowel, index) => <g key={vowel.symbol} className={styles.reference} opacity={selected === index ? .35 : 1}><circle cx={xFor(vowel.f2)} cy={yFor(vowel.f1)} r="16" /><text x={xFor(vowel.f2)} y={yFor(vowel.f1) + 5} textAnchor="middle">{vowel.symbol}</text></g>)}
-      <path className={styles.crosshair} d={`M82 ${yFor(point.f1)}H${xFor(point.f2)}V307`} />
-      <circle className={styles.point} cx={xFor(point.f2)} cy={yFor(point.f1)} r="19" tabIndex={0} role="button" aria-label={`探索点：F1 ${point.f1} Hz，F2 ${point.f2} Hz。方向键移动`} onKeyDown={keyMove}
-        onPointerDown={event => { event.currentTarget.setPointerCapture(event.pointerId); setDragging(true); move(event) }} onPointerMove={event => { if (dragging) move(event) }} onPointerUp={() => setDragging(false)} onPointerCancel={() => setDragging(false)} />
-      <text className={styles.pointText} x={xFor(point.f2)} y={yFor(point.f1) + 5} textAnchor="middle">{VOWELS[selected].symbol}</text>
+  return <section className={styles.lab} data-embedded={embedded} aria-label="元音 F1 F2 空间交互图">
+    {!embedded && <>
+      <div className={styles.presets} aria-label="元音对照">{Object.entries(ANATOMY_VOWELS).map(([key, item]) => <button type="button" key={key} aria-pressed={selected === key} onClick={() => choose(key)}>{item.name}</button>)}<button type="button" onClick={() => choose(selected)}>复位</button></div>
+      <p className={styles.action}>{ANATOMY_VOWELS[selected].action}</p>
+    </>}
+    <div className={styles.mapHeader}><h2>元音空间</h2><span>拖动实心点</span></div>
+    <div className={styles.plot}><svg ref={svgRef} viewBox="0 0 640 377" role="group" aria-labelledby={`${id}-title ${id}-desc`}>
+      <title id={`${id}-title`}>元音的 F1 与 F2 空间</title>
+      <desc id={`${id}-desc`}>左侧 F2 高，右侧 F2 低；上方 F1 低、元音较闭，下方 F1 高、元音较开。实心点与舌位、下颌、唇形及频谱同步。</desc>
+      <defs><linearGradient id={`${id}-field`} x1="0" y1="0" x2="1" y2="1"><stop stopColor="#f0f5fc" /><stop offset="1" stopColor="#fff4f8" /></linearGradient></defs>
+      <rect x="82" y="50" width="514" height="260" rx="8" className={styles.background} fill={`url(#${id}-field)`} />
+      {[200, 400, 600, 800, 1000, 1200, 1400].map(f1 => <g key={f1}><path className={styles.grid} d={`M82 ${yFor(f1)}H596`} /><text x="72" y={yFor(f1) + 4} textAnchor="end">{f1}</text></g>)}
+      {[3600, 2800, 2000, 1200, 400].map(f2 => <g key={f2}><path className={styles.grid} d={`M${xFor(f2)} 50V310`} /><text x={xFor(f2)} y="333" textAnchor="middle">{f2}</text></g>)}
+      <text x="82" y="25" className={styles.f2Text}>← F2 高 · 偏前</text><text x="596" y="25" textAnchor="end" className={styles.f2Text}>偏后 · F2 低 →</text>
+      <text x="10" y="83" textAnchor="middle" className={styles.f1Text}>闭</text><text x="10" y="295" textAnchor="middle" className={styles.f1Text}>开</text>
+      <text x="596" y="361" textAnchor="end">F2 (Hz)</text><text x="8" y="42" className={`${styles.f1Text} ${styles.axisTitle}`}>F1 (Hz)</text>
+      {Object.entries(ANATOMY_VOWELS).map(([key, item]) => {
+        const reference = anatomyVowelReference(key)
+        return <g key={key} className={styles.reference} data-selected={selected === key}>
+          <circle cx={xFor(reference.f2)} cy={yFor(reference.f1)} r="17" role="button" tabIndex={0} aria-label={`选择 ${item.name} 参考`} onClick={() => choose(key)} onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); choose(key) } }} />
+          <text x={xFor(reference.f2)} y={yFor(reference.f1) + 5} textAnchor="middle">{vowelSymbol(key)}</text>
+        </g>
+      })}
+      <path className={styles.crosshair} d={`M82 ${yFor(point.f1)}H${xFor(point.f2)}V310`} />
+      <circle className={styles.point} data-testid="vowel-current-point" cx={xFor(point.f2)} cy={yFor(point.f1)} r="20" role="img" aria-label={`当前点：F1 ${point.f1} Hz，F2 ${point.f2} Hz`}
+        onPointerDown={event => { event.preventDefault(); event.currentTarget.setPointerCapture(event.pointerId); dragging.current = true; move(event) }} onPointerMove={event => { if (dragging.current) move(event) }} onPointerUp={() => { dragging.current = false }} onPointerCancel={() => { dragging.current = false }} onLostPointerCapture={() => { dragging.current = false }} />
+      <text className={styles.pointText} x={xFor(point.f2)} y={yFor(point.f1) + 5} textAnchor="middle">{atReference ? vowelSymbol(selected) : '+'}</text>
     </svg></div>
-    <div className={styles.adjustments}>
-      <label htmlFor={`${id}-f1`}>F1 · 开闭 <output>{point.f1} Hz</output><input id={`${id}-f1`} type="range" min="200" max="1000" step="25" value={point.f1} onChange={event => setPoint(old => ({ ...old, f1: Number(event.target.value) }))} /></label>
-      <label htmlFor={`${id}-f2`}>F2 · 前后 <output>{point.f2} Hz</output><input id={`${id}-f2`} type="range" min="600" max="2800" step="50" value={point.f2} onChange={event => setPoint(old => ({ ...old, f2: Number(event.target.value) }))} /></label>
-    </div>
-    <p className={styles.caption}>图中为典型元音的示意位置。选择 i → a 观察开闭，选择 i → u 比较前后与唇形；拖动实心点探索相邻位置。</p>
+    {!embedded && <div className={styles.adjustments}>
+      <label htmlFor={`${id}-f1`}>F1 · 开闭 <output>{point.f1} Hz</output><input id={`${id}-f1`} type="range" min="150" max="1400" step="1" value={point.f1} style={{ '--range-progress': `${(point.f1 - 150) / 1250 * 100}%` } as CSSProperties} onChange={event => change({ ...point, f1: Number(event.target.value) })} /></label>
+      <label htmlFor={`${id}-f2`}>F2 · 前后 <output>{point.f2} Hz</output><input id={`${id}-f2`} type="range" min="400" max="3700" step="1" value={point.f2} style={{ '--range-progress': `${(point.f2 - 400) / 3300 * 100}%` } as CSSProperties} onChange={event => change({ ...point, f2: Number(event.target.value) })} /></label>
+    </div>}
+    <p className={styles.caption}>空心点为元音参考，实心点为当前状态，虚线标出对应的 F1、F2。</p>
   </section>
 }

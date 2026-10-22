@@ -18,3 +18,5 @@
 **/*.tsbuildinfo
 .idea/
 .vscode/
+.playwright-cli/
+output/playwright/

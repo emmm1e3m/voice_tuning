@@ -1,10 +1,10 @@
-.control { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; color: var(--text-soft); font-size: calc(11px * var(--font-scale)); }
+.control { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; color: var(--text-soft); font-size: var(--text-sm); }
 .registerToggle { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; cursor: pointer; }
 .registerToggle input { accent-color: var(--primary); }
 @media (max-width: 768px) { .description { display: none; } }
 .buttons { display: flex; padding: 3px; border: 1px solid var(--border); background: #edf2fa; border-radius: var(--radius-sm); }
-.buttons button { border: 0; border-radius: var(--radius-sm); color: var(--text-soft); background: transparent; padding: 4px 12px; font-size: calc(11px * var(--font-scale)); cursor: pointer; }
+.buttons button { border: 0; border-radius: var(--radius-sm); color: var(--text-soft); background: transparent; padding: 4px 12px; font-size: var(--text-sm); cursor: pointer; }
 .buttons button[aria-pressed="true"] { background: #fff; color: var(--primary); box-shadow: 0 1px 4px #302d4210; font-weight: 600; }
-.control small { font-size: calc(10px * var(--font-scale)); }
+.control small { font-size: var(--text-xs); }
 @media (max-width: 1000px) { .control small { display: none; } }
 @media (max-width: 768px) { .buttons button { min-height: 30px; padding: 3px 12px; } }

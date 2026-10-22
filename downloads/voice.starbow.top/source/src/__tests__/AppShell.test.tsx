@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, within } from '@testing-library/react'
 import { MemoryRouter, Routes, Route, useOutletContext } from 'react-router-dom'
 import { useAppStore } from '../store/appStore'
 import { AppShell, type ShellContext } from '../routes/AppShell'
 
-const { setOptionMock, audioAction, audioState } = vi.hoisted(() => ({ setOptionMock: vi.fn(), audioAction: vi.fn(), audioState: { capturing: false, playing: false } }))
+const { setOptionMock, audioAction, suspendAudio, audioState } = vi.hoisted(() => ({ setOptionMock: vi.fn(), audioAction: vi.fn(), suspendAudio: vi.fn(), audioState: { capturing: false, playing: false } }))
 
 vi.mock('../hooks/useECharts', () => ({
   useECharts: () => ({
@@ -29,6 +29,7 @@ vi.mock('../hooks/useToolbar', () => ({
     isRequesting: false,
     fileInputRef: { current: null },
     handleFileChange: vi.fn(),
+    suspend: suspendAudio,
   }),
 }))
 
@@ -44,6 +45,7 @@ function renderApp(initialEntry: string) {
         <Route element={<AppShell />}>
           <Route index element={<div>analysis-content</div>} />
           <Route path="practice" element={<ProbePage />} />
+          <Route path="statistics" element={<div>statistics-content</div>} />
         </Route>
       </Routes>
     </MemoryRouter>,
@@ -54,6 +56,7 @@ describe('AppShell', () => {
   beforeEach(() => {
     useAppStore.getState().reset()
     audioAction.mockClear()
+    suspendAudio.mockClear()
     audioState.capturing = false
     audioState.playing = false
   })
@@ -81,13 +84,24 @@ describe('AppShell', () => {
     expect(screen.getByText('practice-content 3')).toBeDefined()
   })
 
-  it.each(['idle', 'recording', 'playing'])('opens the foreword without audio actions while %s', mode => {
+  it('suspends realtime audio on statistics entry and uses the statistics help without duplicate recording controls', () => {
+    audioState.capturing = true
+    renderApp('/')
+    fireEvent.click(screen.getByRole('link', { name: '统计分析' }))
+    expect(screen.getByText('statistics-content')).toBeDefined()
+    expect(suspendAudio).toHaveBeenCalledOnce()
+    expect(screen.queryByRole('button', { name: '开始录音' })).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: /帮助/ }))
+    expect(screen.getByRole('button', { name: '统计分析' }).getAttribute('aria-pressed')).toBe('true')
+  })
+
+  it.each(['idle', 'recording', 'playing'])('opens quick start without audio actions while %s', mode => {
     audioState.capturing = mode === 'recording'
     audioState.playing = mode === 'playing'
     renderApp('/')
     expect(screen.queryByRole('dialog')).toBeNull()
     fireEvent.click(screen.getByRole('button', { name: /帮助/ }))
-    expect(screen.getByRole('button', { name: '写在前面' }).getAttribute('aria-pressed')).toBe('true')
+    expect(screen.getByRole('button', { name: '快速上手' }).getAttribute('aria-pressed')).toBe('true')
     fireEvent.click(screen.getByRole('button', { name: '关闭' }))
     expect(audioAction).not.toHaveBeenCalled()
   })
@@ -97,5 +111,16 @@ describe('AppShell', () => {
     fireEvent.click(screen.getByRole('button', { name: '目标说明' }))
     expect(screen.getByRole('button', { name: '训练目标' }).getAttribute('aria-pressed')).toBe('true')
     expect(audioAction).not.toHaveBeenCalled()
+  })
+
+  it.each([false, true])('connects configuration recording controls to the shared recorder while recording=%s', capturing => {
+    audioState.capturing = capturing
+    renderApp('/')
+    fireEvent.click(screen.getByRole('button', { name: '设置' }))
+    const dialog = screen.getByRole('dialog', { name: '配置' })
+    fireEvent.click(within(dialog).getByRole('button', { name: capturing ? '停止录音' : '开始录音' }))
+    expect(audioAction).toHaveBeenCalledWith('record')
+    expect(screen.getByRole('dialog', { name: '配置' })).toBeDefined()
+    expect((within(dialog).getByRole('button', { name: '采集边界声' }) as HTMLButtonElement).disabled).toBe(!capturing)
   })
 })

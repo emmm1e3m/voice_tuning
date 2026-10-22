@@ -1,7 +1,7 @@
 import type { AnalysisFrame, VoiceRegister } from '../types'
 
 export const REGISTER_COLORS = { chest: '#db9c61', mixed: '#6ca891', falsetto: '#9790ce' } as const
-export const REGISTER_EXPLANATION = '背景按时间标示真声、混声、假声的声区估计，F0/F1/F2 共用同一声区；它不是频率高低分区。算法依据泛音丰富度，跨元音和气声可能误判，仅供观察。'
+export const REGISTER_EXPLANATION = '竖直背景色带按时间标示真声、混声、假声的估计，帮助定位换声点、观察过渡稳定性。可在“配置 → 声区校准”中标定个人边界；元音、响度与气声会影响谐波计数。'
 
 type VoicedRegister = Exclude<VoiceRegister, 'unvoiced'>
 export interface RegisterSegment { start: number; end: number; register: VoicedRegister }

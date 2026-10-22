@@ -1,0 +1,17 @@
+.root { display: grid; gap: 12px; color: var(--text-mute); font-size: var(--text-sm); }
+.heading { display: flex; align-items: center; gap: 10px; }
+.heading h4 { margin: 0; color: var(--text); font-size: var(--text-lg); font-weight: 650; }
+.heading span { font-size: var(--text-xs); color: var(--text-mute); }
+.content { display: grid; gap: 10px; line-height: var(--leading-body); }
+.content p { margin: 0; }
+.method { font-size: var(--text-xs); }
+.result { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 10px; }
+.result strong { color: var(--text); font-weight: 600; }
+.actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 2px; }
+.actions button { min-height: 38px; padding: 7px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); background: #fff; font: inherit; cursor: pointer; }
+.actions button:disabled { opacity: .5; cursor: default; }
+.actions button.primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+.actions button:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+.status { font-size: var(--text-sm); }
+.root progress { width: min(320px, 100%); height: 6px; accent-color: var(--primary); }
+@media (max-width: 768px) { .actions button { min-height: 44px; } }

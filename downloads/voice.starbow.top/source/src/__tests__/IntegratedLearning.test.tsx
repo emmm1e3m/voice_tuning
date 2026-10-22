@@ -18,9 +18,9 @@ function renderStudio(portrait = false) {
 }
 
 const DIMENSIONS = [
-  { key: 'f0', card: 'F0 音高：原理与训练方法', topic: 'F0 · 音高', principle: '爬音阶：从短音走到自然说话' },
-  { key: 'f2', card: 'F2 共振与音色：原理与训练方法', topic: 'F2 · 共振与元音', principle: 'F2 的机制：喉位、舌位与唇形' },
-  { key: 'f1', card: 'F1 元音与开口：原理与训练方法', topic: 'F1 · 开口与元音', principle: 'F1 的机制：开口与舌位' },
+  { key: 'f0', card: 'F0 音高：使用说明', topic: 'F0 · 音高', principle: '在程序中观察 F0' },
+  { key: 'f2', card: 'F2 共振与音色：使用说明', topic: 'F2 · 共振与元音', principle: '在程序中观察 F2' },
+  { key: 'f1', card: 'F1 元音与开口：使用说明', topic: 'F1 · 开口与元音', principle: '在程序中观察 F1' },
 ] as const
 
 describe('integrated learning entry points', () => {
@@ -40,10 +40,10 @@ describe('integrated learning entry points', () => {
       trigger.focus()
       fireEvent.click(trigger)
       const dialog = screen.getByRole('dialog', { name: '使用说明' })
-      if (portrait) expect((within(dialog).getByRole('combobox', { name: '选择教程章节' }) as HTMLSelectElement).value).toBe(dimension.key)
+      if (portrait) expect((within(dialog).getByRole('combobox', { name: '选择帮助主题' }) as HTMLSelectElement).value).toBe(dimension.key)
       else expect(within(dialog).getByRole('button', { name: dimension.topic }).getAttribute('aria-pressed')).toBe('true')
       expect(within(dialog).getByRole('heading', { name: dimension.principle })).toBeTruthy()
-      expect(within(dialog).getByRole('link', { name: 'MTF 手册原文（离线）' }).getAttribute('href')).toMatch(/manual\/index\.html$/)
+      expect(within(dialog).getByRole('link', { name: '阅读教学文档' }).getAttribute('href')).toBe('#/manual')
       fireEvent.keyDown(dialog, { key: 'Escape' })
       expect(screen.queryByRole('dialog')).toBeNull()
       expect(document.activeElement).toBe(trigger)
@@ -53,9 +53,9 @@ describe('integrated learning entry points', () => {
 
   it.each(DIMENSIONS)('opens $key learning from the editable desktop target and returns to its trigger', dimension => {
     renderStudio()
-    const targets = screen.getByRole('group', { name: '练习目标中心' })
+    const targets = screen.getByRole('group', { name: '目标频率设置' })
     expect(targets.hasAttribute('open')).toBe(true)
-    const trigger = within(targets).getByRole('button', { name: `${dimension.key.toUpperCase()} 目标原理与练习` })
+    const trigger = within(targets).getByRole('button', { name: `${dimension.key.toUpperCase()} 目标说明` })
     trigger.focus()
     fireEvent.click(trigger)
     expect(screen.getByRole('button', { name: dimension.topic }).getAttribute('aria-pressed')).toBe('true')
