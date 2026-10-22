@@ -4,7 +4,7 @@
 
 ## 来源与致谢
 
-本项目基于 [JPs-git/voice-builder](https://github.com/JPs-git/voice-builder) 二次开发，并整合了 [あおぎ葵 / Aoi](https://space.bilibili.com/942770) 的 [MTF 声音女性化练习手册](https://mtf-voice-training.vercel.app/)。感谢原作者提供的代码与文档。
+本项目基于 [JPs-git/voice-builder](https://github.com/JPs-git/voice-builder) 二次开发，并整合了 [あおぎ葵 / Aoi](https://space.bilibili.com/942770) 的 [练习手册](https://mtf-voice-training.vercel.app/)。感谢原作者提供的代码与文档。
 
 本版对手册作了少量修订、校注与图示调整，教学页已标注，并保留原作者署名与原站链接。
 
